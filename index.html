@@ -1,0 +1,3027 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서윤준 · 시스템 기획자 포트폴리오</title>
+<style>
+/* ============================================================
+   :ROOT 디자인 토큰
+   페이지 전체에서 사용되는 모든 색상, 간격, 라디우스, 그라데이션,
+   합성 그림자, 외부 미디어 베이스 URL을 단일 소스로 선언
+   ============================================================ */
+:root {
+  /* 브랜드 & 액센트 컬러 — 스팀 시그니처 시안과 액션 그린 */
+  --accent-cyan: #66c0f4;
+  --accent-cyan-bright: #b5dffd;
+  --action-green: #5c7e10;
+  --action-green-bright: #a4d007;
+
+  /* 표면 스택 — 페이지에서 카드까지 3단계 네이비 */
+  --surface-page: #171a21;
+  --surface-body: #1b2838;
+  --surface-card: #2a475e;
+  --surface-card-hover: #316282;
+  --surface-hairline: rgba(0, 0, 0, 0.3);
+  --surface-bevel-top: rgba(255, 255, 255, 0.05);
+  --surface-purchase: rgba(0, 0, 0, 0.2);
+  --surface-modal-backdrop: rgba(23, 26, 33, 0.85);
+
+  /* 텍스트 컬러 */
+  --text-primary: #c7d5e0;
+  --text-headline: #ffffff;
+  --text-muted: #8f98a0;
+  --text-dim: #66727d;
+  --text-tag: #67c1f5;
+
+  /* 태그 배경 */
+  --tag-bg: rgba(103, 193, 245, 0.2);
+  --tag-bg-hover: rgba(103, 193, 245, 0.3);
+
+  /* 스페이싱 토큰 — 4px 베이스 */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 64px;
+
+  /* 라디우스 스케일 — 스팀 특유의 거의 직각 */
+  --radius-none: 0;
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+
+  /* 합성 그라데이션 */
+  --gradient-hero: radial-gradient(ellipse at top, #2a475e 0%, #1b2838 60%, #171a21 100%);
+  --gradient-cta: linear-gradient(to bottom, #a4d007 5%, #5c7e10 95%);
+  --gradient-cta-hover: linear-gradient(to bottom, #b6e040 5%, #6c9118 95%);
+
+  /* 합성 그림자 — 카드 베벨과 시안 호버 링 */
+  --bevel: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), inset 0 -1px 0 0 rgba(0, 0, 0, 0.3);
+  --cyan-ring: 0 0 0 1px #66c0f4, 0 0 16px rgba(102, 192, 244, 0.35);
+  --cyan-inset: inset 0 0 0 2px #66c0f4;
+
+  /* 외부 리소스 베이스 URL — GitHub Pages 호스팅용 */
+  --media-base-images: "https://koioas1.github.io/syj_portfolio/images/";
+  --media-base-pdf: "https://koioas1.github.io/syj_portfolio/pdf/";
+
+  /* 폰트 스택 — 모티바 산스 + 한글 폴백 */
+  --font-stack: "Motiva Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+}
+
+/* ============================================================
+   리셋 & 베이스
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-stack);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  background-color: var(--surface-page);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 인트로 표시 중 — 본문 스크롤 락 */
+body.is-intro-active {
+  overflow: hidden;
+}
+
+/* 모달 열림 상태 — body 스크롤 락 */
+body.is-modal-open {
+  overflow: hidden;
+}
+
+a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-cyan-bright);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* 인라인 키워드 — 본문 내 시안 강조 */
+.kw {
+  color: var(--accent-cyan);
+}
+
+/* ============================================================
+   PRESS START INTRO — 진입 즉시 표시되는 풀스크린 오버레이
+   클릭/키 입력/CTA 버튼으로 통과, 통과 후 페이드 아웃
+   ============================================================ */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: #000;
+  overflow: hidden;
+  cursor: pointer;
+  animation: intro-in 0.6s ease-out;
+}
+
+/* 통과 시 페이드 아웃 — JS에서 클래스 추가 */
+.intro.is-exiting {
+  animation: intro-out 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* 인트로 비활성 상태 — 완전히 제거된 후 */
+.intro.is-hidden {
+  display: none;
+}
+
+@keyframes intro-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes intro-out {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* 후방 배경 미디어 레이어 — MP4/GIF 슬라이더 */
+.intro__media-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* 미디어 미로드 시 폴백 — 스팀 네이비 그라데이션 */
+.intro__media-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse at top, #2a475e 0%, #1b2838 50%, #000000 100%);
+}
+
+/* 각 미디어 슬라이드 — 크로스페이드 트랜지션 */
+.intro__media {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.intro__media.is-active {
+  opacity: 1;
+}
+
+/* 미디어 자체 — 화면 가득 + 블러 + 스케일로 가장자리 보정 */
+.intro__media img,
+.intro__media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(12px) saturate(0.85);
+  transform: scale(1.1);
+}
+
+/* 어두운 라디얼 오버레이 — 텍스트 가독성 확보 */
+.intro__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse at center,
+    rgba(23, 26, 33, 0.55) 0%,
+    rgba(23, 26, 33, 0.85) 70%,
+    rgba(23, 26, 33, 0.95) 100%);
+}
+
+/* 콘텐츠 레이어 — 중앙 텍스트 컬럼 */
+.intro__content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+/* 상단 좌측 — Steam 클라이언트 부팅 분위기 */
+.intro__brand {
+  position: absolute;
+  top: var(--space-xl);
+  left: var(--space-xl);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.intro__brand-line2 {
+  color: var(--text-primary);
+  margin-top: 4px;
+  letter-spacing: 0.18em;
+}
+
+/* 상단 우측 — 버전 라벨 */
+.intro__version {
+  position: absolute;
+  top: var(--space-xl);
+  right: var(--space-xl);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 중앙 콘텐츠 컬럼 */
+.intro__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  max-width: 640px;
+}
+
+/* 작은 상단 라벨 — 사이트 정체성 */
+.intro__eyebrow {
+  font-size: 12px;
+  color: var(--accent-cyan);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+/* 메인 헤드라인 */
+.intro__headline {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--text-headline);
+  letter-spacing: -0.005em;
+}
+
+.intro__headline-accent {
+  color: var(--accent-cyan);
+}
+
+/* 서브 카피 — 캐치프레이즈 */
+.intro__sub {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+/* CTA — Steam의 진입 버튼 분위기, 호흡 펄스 애니메이션 */
+.intro__cta {
+  margin-top: var(--space-md);
+  padding: 14px 36px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-headline);
+  background: linear-gradient(to bottom, #67c1f5 5%, #417a9b 95%);
+  border: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  cursor: pointer;
+  font-family: inherit;
+  animation: cta-breathe 2.4s ease-in-out infinite;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.intro__cta:hover {
+  background: linear-gradient(to bottom, #7dcef7 5%, #4a8aae 95%);
+  box-shadow: var(--bevel), 0 0 24px rgba(102, 192, 244, 0.4);
+  animation-play-state: paused;
+}
+
+.intro__cta:active {
+  transform: translateY(1px);
+}
+
+/* 부드러운 호흡 펄스 — 모던 OS 부팅 분위기 */
+@keyframes cta-breathe {
+  0%, 100% {
+    box-shadow: var(--bevel), 0 0 0 rgba(102, 192, 244, 0);
+    opacity: 0.95;
+  }
+  50% {
+    box-shadow: var(--bevel), 0 0 32px rgba(102, 192, 244, 0.45);
+    opacity: 1;
+  }
+}
+
+/* 하단 키 가이드 */
+.intro__hint {
+  position: absolute;
+  bottom: var(--space-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.intro__hint-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--text-muted);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  background-color: rgba(23, 26, 33, 0.5);
+}
+
+.intro__hint-sep {
+  opacity: 0.4;
+}
+
+/* 미디어 진행 도트 — 우측 하단 */
+.intro__media-indicator {
+  position: absolute;
+  bottom: var(--space-xl);
+  right: var(--space-xl);
+  display: flex;
+  gap: var(--space-xxs);
+  z-index: 2;
+}
+
+.intro__media-dot {
+  width: 18px;
+  height: 2px;
+  background-color: rgba(199, 213, 224, 0.25);
+  transition: background-color 0.3s ease;
+}
+
+.intro__media-dot.is-active {
+  background-color: var(--accent-cyan);
+}
+
+/* 인트로 모바일 대응 */
+@media (max-width: 768px) {
+  .intro__brand,
+  .intro__version {
+    top: var(--space-md);
+  }
+  .intro__brand { left: var(--space-md); }
+  .intro__version { right: var(--space-md); }
+
+  .intro__headline {
+    font-size: 24px;
+  }
+  .intro__sub {
+    font-size: 13px;
+  }
+  .intro__eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+  }
+  .intro__cta {
+    padding: 12px 28px;
+    font-size: 13px;
+  }
+  .intro__hint {
+    bottom: var(--space-md);
+    gap: var(--space-xs);
+    font-size: 10px;
+  }
+  .intro__media-indicator {
+    bottom: var(--space-md);
+    right: var(--space-md);
+  }
+}
+
+/* ============================================================
+   페이지 전환 컨테이너 — 활성 페이지만 표시
+   ============================================================ */
+.page {
+  display: none;
+}
+
+.page.is-active {
+  display: block;
+}
+
+/* ============================================================
+   TOP HEADER — 포트폴리오명 + 프로젝트 스위처
+   ============================================================ */
+.top-nav {
+  background-color: var(--surface-page);
+  height: 104px;
+  display: flex;
+  align-items: center;
+}
+
+.top-nav__inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.top-nav__brand {
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text-headline);
+  line-height: 1.3;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.top-nav__brand:hover {
+  color: var(--accent-cyan);
+}
+
+/* 프로젝트 스위처 — 캡슐 칩 가로 배치 */
+.project-switcher {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.project-switcher__chip {
+  height: 32px;
+  padding: 6px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-muted);
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.project-switcher__chip:hover {
+  color: var(--accent-cyan);
+}
+
+/* 활성 칩 — 현재 페이지 표시 */
+.project-switcher__chip--active {
+  background-color: var(--surface-card);
+  color: var(--text-headline);
+  box-shadow: var(--bevel);
+}
+
+.project-switcher__chip--active:hover {
+  color: var(--text-headline);
+}
+
+/* ============================================================
+   INTRO PAGE — 자기소개 페이지 (소개 탭 전용 레이아웃)
+   히어로 인사말 + 핵심 역량 + 경력 + 보유 기술 + 프로젝트 바로가기
+   ============================================================ */
+.intro-hero {
+  background: var(--gradient-hero);
+  padding: var(--space-section) 0;
+}
+
+.intro-hero__inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  display: grid;
+  grid-template-columns: 1fr 324px;
+  gap: var(--space-xl);
+  align-items: center;
+}
+
+.intro-hero__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.intro-hero__role {
+  font-size: 13px;
+  color: var(--accent-cyan);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro-hero__name {
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-headline);
+  letter-spacing: -0.01em;
+}
+
+.intro-hero__pitch {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  max-width: 560px;
+}
+
+.intro-hero__contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  font-size: 14px;
+}
+
+.intro-hero__contact-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--space-md);
+}
+
+.intro-hero__contact-label {
+  color: var(--text-muted);
+}
+
+.intro-hero__portrait {
+  width: 324px;
+  aspect-ratio: 3 / 4;
+  background-color: var(--surface-card);
+  overflow: hidden;
+  box-shadow: var(--bevel);
+}
+
+.intro-hero__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 인트로 본문 섹션 — 핵심 역량 / 경력 / 기술 */
+.intro-section {
+  background-color: var(--surface-body);
+  padding: var(--space-xl) 0;
+}
+
+/* 페이지 톤 배경 — 짝수 섹션과 교차 */
+.intro-section--page {
+  background-color: var(--surface-page);
+}
+
+.intro-section__inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* 핵심 역량 카드 4개 그리드 */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.skill-card {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-card:hover {
+  background-color: var(--surface-card-hover);
+  box-shadow: var(--cyan-ring);
+}
+
+.skill-card__title {
+  font-size: 15px;
+  color: var(--text-headline);
+  line-height: 1.3;
+}
+
+.skill-card__desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* 경력 카드 — 좌측 연도 / 우측 내용 */
+.career-card {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  padding: var(--space-lg);
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--space-lg);
+}
+
+.career-card__period {
+  font-size: 13px;
+  color: var(--accent-cyan);
+  line-height: 1.4;
+}
+
+.career-card__period-sub {
+  display: block;
+  color: var(--text-muted);
+  margin-top: var(--space-xxs);
+}
+
+.career-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.career-card__title {
+  font-size: 16px;
+  color: var(--text-headline);
+  line-height: 1.3;
+}
+
+.career-card__desc {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   보유 툴 — 별점 평점 시스템 (Software)
+   - 3컬럼: Engine / Docs & Data / Comms & AI
+   - 각 항목: 이름 + 별점(5개) + 등급 라벨 + 한 줄 평
+   - 호버 효과: 핵심 역량과 동일한 시안 글로우(--cyan-ring)
+   ============================================================ */
+
+/* 3컬럼 그리드 컨테이너 */
+.skill-rating-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+/* 카테고리 컬럼 — 헤더 + 카드 리스트 */
+.skill-rating-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* 컬럼 헤더 — 라벨 + 가로 라인 */
+.skill-rating-column__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xxs);
+}
+
+.skill-rating-column__label {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.skill-rating-column__line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--surface-hairline);
+}
+
+/* 평점 카드 — 핵심 역량과 동일한 시안 글로우 호버 */
+.skill-rating-item {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 호버 — 핵심 역량 카드와 동일한 효과 */
+.skill-rating-item:hover {
+  background-color: var(--surface-card-hover);
+  box-shadow: var(--cyan-ring);
+}
+
+.skill-rating-item__name {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-headline);
+  line-height: 1.3;
+}
+
+/* 별점 + 라벨 한 행 */
+.skill-rating-item__bottom {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* 등급 근거/한 줄 평 — 카드 하단 캡션 */
+.skill-rating-item__note {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* 별점 컨테이너 — 5개 가로 배치 */
+.skill-rating-item__stars {
+  display: inline-flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+/* 개별 별 SVG — 12x12, currentColor로 부모 색 따라감 */
+.skill-rating-item__star {
+  width: 12px;
+  height: 12px;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* 빈 별 — 항상 어두운 회색 */
+.skill-rating-item__star--empty {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+/* 별 컬러 위계 — 채워진 별의 색이 등급에 따라 달라짐 */
+.skill-rating-item__stars--expert {
+  color: var(--accent-cyan-bright);
+}
+.skill-rating-item__stars--adept {
+  color: var(--accent-cyan);
+}
+.skill-rating-item__stars--applied {
+  color: var(--accent-cyan);
+}
+.skill-rating-item__stars--using {
+  color: var(--text-primary);
+}
+.skill-rating-item__stars--learning {
+  color: var(--text-muted);
+}
+
+/* 등급 라벨 텍스트 */
+.skill-rating-item__rating {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* 5단계 라벨 컬러 modifier — 전문만 Bold로 최상위 강조 */
+.skill-rating-item__rating--expert {
+  color: var(--accent-cyan-bright);
+  font-weight: 700;
+}
+.skill-rating-item__rating--adept {
+  color: var(--accent-cyan);
+}
+.skill-rating-item__rating--applied {
+  color: var(--accent-cyan);
+}
+.skill-rating-item__rating--using {
+  color: var(--text-primary);
+}
+.skill-rating-item__rating--learning {
+  color: var(--text-muted);
+}
+
+/* 프로젝트 바로가기 — 큰 카드 3개 */
+.project-link-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.project-link-card {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-link-card:hover {
+  background-color: var(--surface-card-hover);
+  box-shadow: var(--cyan-ring);
+}
+
+.project-link-card__media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--surface-page);
+  overflow: hidden;
+}
+
+.project-link-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-link-card__caption {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.project-link-card__title {
+  font-size: 16px;
+  color: var(--text-headline);
+  line-height: 1.3;
+}
+
+.project-link-card__meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   HERO BAND — 프로젝트 페이지 공통 히어로 (DonutCrash/PTD/생쥐)
+   배경에 각 프로젝트 타이틀 이미지를 흐리게 깔아 분위기 부여
+   ============================================================ */
+.hero-band {
+  background: var(--gradient-hero);
+  padding: var(--space-xl) 0 var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 배경 타이틀 이미지 레이어 — data-bg-img 어트리뷰트로 주입
+   본문 가독성 보호를 위해 강한 블러 + 매우 낮은 투명도 + 다크 마스크 */
+.hero-band__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* 흐림 강도 — 본문 방해 없이 분위기만 전달 */
+  filter: blur(40px) saturate(0.7);
+  opacity: 0.18;
+  /* 블러 가장자리 잘림 방지용 스케일 */
+  transform: scale(1.15);
+  pointer-events: none;
+}
+
+/* 어두운 마스크 — 그라데이션 위에 한 번 더 덮어 본문 영역 보호 */
+.hero-band__mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(23, 26, 33, 0.55) 0%,
+    rgba(27, 40, 56, 0.75) 100%
+  );
+  pointer-events: none;
+}
+
+/* 본문 컨텐츠는 배경 레이어들 위로 */
+.hero-band__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.hero-band__title {
+  font-size: 39px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--text-headline);
+  margin-bottom: var(--space-md);
+}
+
+/* 슬라이더 + 사이드바 2단 그리드 */
+.hero-band__pair {
+  display: grid;
+  grid-template-columns: 1fr 324px;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+/* ============================================================
+   MEDIA SLIDER — 자동 회전 미디어 슬라이드
+   페이지의 중심. 5초 간격 자동 회전, 호버 시 일시정지
+   ============================================================ */
+.media-slider {
+  width: 100%;
+}
+
+.media-slider__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+  overflow: hidden;
+  border-radius: var(--radius-none);
+}
+
+.media-slider__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* 활성 슬라이드만 표시 */
+.media-slider__slide--active {
+  opacity: 1;
+}
+
+.media-slider__slide img,
+.media-slider__slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 슬라이드 캡션 — 하단 검은 띠 */
+.media-slider__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-xs) var(--space-md);
+  background-color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* 썸네일 스트립 — 균등 분할 */
+.media-slider__thumbs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.media-slider__thumb {
+  flex: 1;
+  aspect-ratio: 16 / 9;
+  background-color: var(--surface-card);
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  box-shadow: var(--bevel);
+  transition: box-shadow 0.2s ease;
+}
+
+.media-slider__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.media-slider__thumb:hover {
+  box-shadow: var(--cyan-ring);
+}
+
+.media-slider__thumb:hover img {
+  opacity: 1;
+}
+
+/* 활성 썸네일 — 시안 인셋 보더 */
+.media-slider__thumb--active {
+  box-shadow: var(--cyan-inset);
+}
+
+.media-slider__thumb--active img {
+  opacity: 1;
+}
+
+/* ============================================================
+   INFO SIDEBAR — 타이틀 아트 + 블러브 + 메타 + 태그
+   카드 프레임 없이 히어로 그라데이션 위에 직접 배치
+   ============================================================ */
+.info-sidebar {
+  width: 324px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.info-sidebar__title-art {
+  width: 100%;
+  aspect-ratio: 324 / 151;
+  background-color: var(--surface-card);
+  overflow: hidden;
+}
+
+.info-sidebar__title-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info-sidebar__blurb {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* 메타 블록 — 라벨/값 2단 그리드 */
+.info-sidebar__meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xxs);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.info-sidebar__meta-label {
+  color: var(--text-muted);
+}
+
+.info-sidebar__meta-value {
+  color: var(--accent-cyan);
+}
+
+/* 메타 값 안의 서브 카운트 — 무난한 회색 */
+.info-sidebar__meta-value-sub {
+  color: var(--text-muted);
+}
+
+.info-sidebar__tags-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.info-sidebar__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
+}
+
+/* 태그 칩 — 인터랙티브 아님, 시각 표지만 */
+.tag-pill {
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-tag);
+  background-color: var(--tag-bg);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tag-pill:hover {
+  background-color: var(--tag-bg-hover);
+  color: var(--accent-cyan-bright);
+}
+
+/* ============================================================
+   PURCHASE BOX — 게임 다운로드 액션 밴드
+   히어로 페어 아래 풀폭, 좌측 라벨 + 우측 액션
+   ============================================================ */
+.purchase-box {
+  background-color: var(--surface-purchase);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.purchase-box__heading {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--text-headline);
+}
+
+.purchase-box__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* 보조 시안 링크 — 외부 리소스 모달 트리거 */
+.cta-button-secondary {
+  font-size: 14px;
+  color: var(--accent-cyan);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.cta-button-secondary:hover {
+  color: var(--accent-cyan-bright);
+}
+
+/* 메인 그린 CTA — 페이지 전체에서 단 하나, 외부 게임 링크 */
+.cta-button-primary {
+  display: inline-block;
+  padding: 8px 24px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.0;
+  color: var(--text-headline);
+  background: var(--gradient-cta);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.cta-button-primary:hover {
+  background: var(--gradient-cta-hover);
+  color: var(--text-headline);
+}
+
+/* ============================================================
+   SECTION HEADER — About / 기획서 / 인트로 섹션 공통 헤더
+   ============================================================ */
+.section-header {
+  border-bottom: 1px solid var(--surface-hairline);
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.section-header__title {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--text-headline);
+}
+
+/* ============================================================
+   ABOUT SHOWCASE — 이미지 + 텍스트 교차 배치
+   1200px 컨테이너, 짝수 아이템은 --reverse로 좌우 반전
+   ============================================================ */
+.about-showcase {
+  background-color: var(--surface-body);
+  padding: var(--space-xl) 0;
+}
+
+.about-showcase__inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.about-showcase__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* 어바웃 아이템 — 이미지 1fr / 텍스트 1fr */
+.about-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.about-item__media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--surface-card);
+  overflow: hidden;
+}
+
+.about-item__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.about-item__heading {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--text-headline);
+}
+
+.about-item__body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+/* 아이템 좌우 반전 — 짝수 인덱스에 적용 */
+.about-item--reverse .about-item__media {
+  order: 2;
+}
+
+.about-item--reverse .about-item__text {
+  order: 1;
+}
+
+/* ============================================================
+   PLANNING GALLERY — 기획서 문서 타일 3-up 그리드
+   940px 컨테이너, 클릭 시 PDF 모달 오픈
+   ============================================================ */
+.planning-gallery {
+  background-color: var(--surface-body);
+  padding: var(--space-xl) 0 var(--space-section);
+}
+
+.planning-gallery__inner {
+  max-width: 940px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.planning-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* 문서 타일 — 미리보기 이미지 + 캡션 2줄 */
+.doc-tile {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doc-tile:hover {
+  background-color: var(--surface-card-hover);
+  box-shadow: var(--cyan-ring);
+}
+
+.doc-tile__preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--surface-page);
+  overflow: hidden;
+}
+
+.doc-tile__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doc-tile__caption {
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.doc-tile__title {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.doc-tile__meta {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* 타일 카테고리 변형 — 캡션 메타 색상만 조정 */
+.doc-tile--research .doc-tile__meta,
+.doc-tile--build .doc-tile__meta {
+  color: var(--text-tag);
+}
+
+/* ============================================================
+   MODAL OVERLAY — PDF 임베드 뷰어
+   문서 타일 클릭 시 열림, ESC/배경 클릭/X 버튼으로 닫힘
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+/* 모달 활성 상태 */
+.modal-overlay.is-open {
+  display: flex;
+  animation: modal-fade-in 0.2s ease-out;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: var(--surface-modal-backdrop);
+}
+
+/* 모달 패널 — 1400px 폭, 95vh 높이 */
+.modal-overlay__panel {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  height: 95vh;
+  background-color: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--bevel);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  animation: modal-panel-in 0.2s ease-out;
+}
+
+@keyframes modal-panel-in {
+  from { transform: translateY(4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.modal-overlay__title {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--text-headline);
+}
+
+/* X 클로즈 버튼 — 32x32, 배경 없음 */
+.modal-overlay__close {
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-cyan);
+  font-size: 24px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.modal-overlay__close:hover {
+  color: var(--accent-cyan-bright);
+}
+
+/* PDF 임베드 영역 */
+.modal-overlay__body {
+  flex: 1;
+  min-height: 0;
+}
+
+.modal-overlay__iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: var(--surface-page);
+}
+
+/* 외부 리소스 모달 — PDF iframe 대신 링크 리스트 */
+.modal-overlay__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+}
+
+.modal-overlay__link {
+  font-size: 16px;
+  color: var(--accent-cyan);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--surface-hairline);
+}
+
+/* ============================================================
+   FOOTER BAND — 연락처 + 카피라이트
+   ============================================================ */
+.footer-band {
+  background-color: var(--surface-page);
+  padding: var(--space-lg) 0;
+}
+
+.footer-band__inner {
+  max-width: 940px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.footer-band__contact {
+  font-size: 14px;
+  color: var(--accent-cyan);
+}
+
+.footer-band__copy {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   RESPONSIVE — 1024px / 768px / 480px 세 단계
+   ============================================================ */
+@media (max-width: 1024px) {
+  /* 인트로 히어로 — 세로 스택 */
+  .intro-hero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .intro-hero__portrait {
+    width: 100%;
+    max-width: 324px;
+    aspect-ratio: 16 / 9;
+  }
+
+  /* 핵심 역량 — 2x2 그리드 */
+  .skill-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 보유 툴 별점 그리드 — 1열 (각 컬럼이 세로로 쌓임) */
+  .skill-rating-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 프로젝트 링크 카드 — 1열 */
+  .project-link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 경력 카드 — 세로 스택 */
+  .career-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  /* 히어로 페어 — 슬라이더 위, 사이드바 아래 단일 컬럼 */
+  .hero-band__pair {
+    grid-template-columns: 1fr;
+  }
+
+  .info-sidebar {
+    width: 100%;
+  }
+
+  /* 어바웃 아이템 — 이미지 위, 텍스트 아래 (reverse 무시) */
+  .about-item,
+  .about-item--reverse {
+    grid-template-columns: 1fr;
+  }
+
+  .about-item--reverse .about-item__media {
+    order: 1;
+  }
+
+  .about-item--reverse .about-item__text {
+    order: 2;
+  }
+
+  /* 다운로드 박스 — 세로 스택 */
+  .purchase-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .purchase-box__actions {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-nav {
+    height: auto;
+    padding: var(--space-md) 0;
+  }
+
+  .top-nav__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  /* 프로젝트 스위처 — 가로 스크롤 */
+  .project-switcher {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    width: 100%;
+    scrollbar-width: none;
+  }
+
+  .project-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-switcher__chip {
+    flex-shrink: 0;
+  }
+
+  .intro-hero__name {
+    font-size: 36px;
+  }
+
+  .intro-hero__pitch {
+    font-size: 16px;
+  }
+
+  /* 핵심 역량 — 1열 */
+  .skill-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-band__title {
+    font-size: 28px;
+  }
+
+  /* 문서 타일 그리드 — 2-up */
+  .planning-gallery__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 모달 패널 — 풀 뷰포트 */
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .modal-overlay__panel {
+    max-width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    padding: var(--space-md);
+  }
+
+  .footer-band__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .planning-gallery__grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body class="is-intro-active">
+
+<!-- ============================================================ -->
+<!-- ============ PRESS START INTRO (진입 즉시 표시) ============ -->
+<!-- ============================================================ -->
+<div class="intro" id="intro" role="button" tabindex="0" aria-label="포트폴리오 시작">
+
+  <!-- 후방 미디어 슬라이더 — MP4/GIF 순차 재생 -->
+  <div class="intro__media-layer" id="introMediaLayer">
+    <!-- 폴백 그라데이션 (미디어 미로드 시) -->
+    <div class="intro__media-fallback"></div>
+    <!-- 미디어 슬라이드는 JS에서 동적 생성 -->
+  </div>
+
+  <!-- 어두운 오버레이 — 텍스트 가독성 -->
+  <div class="intro__overlay"></div>
+
+  <!-- 미디어 진행 도트 -->
+  <div class="intro__media-indicator" id="introMediaIndicator"></div>
+
+  <!-- 콘텐츠 레이어 -->
+  <div class="intro__content">
+    <div class="intro__brand">
+      Welcome to Steam
+      <div class="intro__brand-line2">SYJ_PORTFOLIO</div>
+    </div>
+    <div class="intro__version">v2026.02.10</div>
+
+    <div class="intro__center">
+      <div class="intro__eyebrow">Balance &amp; System Designer</div>
+      <h1 class="intro__headline">
+        <span class="intro__headline-accent">서윤준</span>의 게임 기획 포트폴리오
+      </h1>
+      <p class="intro__sub">
+        4년간의 회계 실무로 단련된 데이터 무결성 검증 능력으로,<br>
+        명확한 수식과 시뮬레이션을 통해 디테일이 강한 밸런스를 설계합니다.
+      </p>
+      <button class="intro__cta" id="introCta">Enter Portfolio</button>
+    </div>
+
+    <div class="intro__hint">
+      <span>Press</span>
+      <span class="intro__hint-key">CLICK</span>
+      <span class="intro__hint-sep">·</span>
+      <span class="intro__hint-key">SPACE</span>
+      <span class="intro__hint-sep">·</span>
+      <span class="intro__hint-key">ENTER</span>
+      <span>to continue</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ============ TOP HEADER ============ -->
+<!-- 포트폴리오명 + 프로젝트 스위처 (4개 탭) -->
+<!-- ============================================================ -->
+<header class="top-nav">
+  <div class="top-nav__inner">
+    <button class="top-nav__brand" data-page-link="intro">서윤준 · 시스템 기획자 포트폴리오</button>
+    <nav class="project-switcher" aria-label="프로젝트 전환">
+      <button class="project-switcher__chip project-switcher__chip--active" data-page-link="intro" aria-current="page">소개</button>
+      <button class="project-switcher__chip" data-page-link="donutcrash">DonutCrash</button>
+      <button class="project-switcher__chip" data-page-link="ptd">PathTowerDefence</button>
+      <button class="project-switcher__chip" data-page-link="mouse">생쥐 대탈출</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- ============ INTRO PAGE (소개 — 메인 진입 페이지) ============ -->
+<!-- ============================================================ -->
+<main class="page is-active" data-page="intro">
+
+<section class="intro-hero">
+    <div class="intro-hero__inner">
+      <div class="intro-hero__copy">
+        <span class="intro-hero__role">Balance &amp; System Game Designer</span>
+        <h1 class="intro-hero__name">서윤준</h1>
+        <p class="intro-hero__pitch">
+          <span class="kw">"1%의 수치 차이로 전투 경험을 바꾸는 밸런스 기획자"</span><br>
+          4년간의 회계 실무로 길러진 데이터 무결성 검증 능력을 무기로,
+          명확한 수식과 시뮬레이션을 통해 디테일이 강한 밸런스를 설계합니다.
+        </p>
+        <div class="intro-hero__contact">
+          <div class="intro-hero__contact-row">
+            <span class="intro-hero__contact-label">Email</span>
+            <a href="mailto:koioas1@gmail.com">koioas1@gmail.com</a>
+          </div>
+          <div class="intro-hero__contact-row">
+            <span class="intro-hero__contact-label">Phone</span>
+            <span>010-9890-8719</span>
+          </div>
+        </div>
+      </div>
+      <div class="intro-hero__portrait">
+        <img data-img-src="intro/portrait.png" alt="서윤준 프로필 이미지">
+      </div>
+    </div>
+  </section>
+
+<section class="intro-section intro-section--page">
+    <div class="intro-section__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">프로젝트</h2>
+      </div>
+      <!-- 프로젝트 카드 미디어 — 각 프로젝트 페이지 첫 슬라이드와 동일한 GIF가 재생됨
+           현재는 임시 placeholder URL을 사용. 실제 GIF 파일로 교체 시 data-img-direct만 수정 -->
+      <div class="project-link-grid">
+        <button class="project-link-card" data-page-link="donutcrash">
+          <div class="project-link-card__media">
+            <img data-img-direct="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif" alt="">
+          </div>
+          <div class="project-link-card__caption">
+            <div class="project-link-card__title">Donut Crash</div>
+            <div class="project-link-card__meta">턴제 물리 충돌 · 시스템 &amp; 밸런스 기획</div>
+          </div>
+        </button>
+        <button class="project-link-card" data-page-link="ptd">
+          <div class="project-link-card__media">
+            <img data-img-direct="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif" alt="">
+          </div>
+          <div class="project-link-card__caption">
+            <div class="project-link-card__title">PathTowerDefence</div>
+            <div class="project-link-card__meta">전략 TD · 시스템 설계 &amp; 밸런스 기획</div>
+          </div>
+        </button>
+        <button class="project-link-card" data-page-link="mouse">
+          <div class="project-link-card__media">
+            <img data-img-direct="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif" alt="">
+          </div>
+          <div class="project-link-card__caption">
+            <div class="project-link-card__title">생쥐 대탈출</div>
+            <div class="project-link-card__meta">방치형 · 재화 경제 구조 설계</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+<section class="intro-section">
+    <div class="intro-section__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">핵심 역량</h2>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-card">
+          <div class="skill-card__title">데이터 시뮬레이션</div>
+          <div class="skill-card__desc">Excel 기반 수치 검증과 밸런스 시뮬레이션으로 단 1의 차이를 정밀하게 조율</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-card__title">게임 밸런스 설계</div>
+          <div class="skill-card__desc">스탯 상성과 성장 곡선을 수식으로 정립하여 의도된 긴장감을 설계</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-card__title">경제 인플레이션 설계</div>
+          <div class="skill-card__desc">재화 생성과 소모 구조를 데이터화하여 장기 플레이를 유도하는 경제 시스템 구축</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-card__title">회계/재무 데이터 관리</div>
+          <div class="skill-card__desc">4년간의 회계 실무로 다진 데이터 무결성 검증과 오차 허용 0의 꼼꼼함</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="intro-section intro-section--page">
+    <div class="intro-section__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">경력</h2>
+      </div>
+      <div class="career-card">
+        <div class="career-card__period">
+          2021.03 ~ 2025.04
+          <span class="career-card__period-sub">4년 1개월</span>
+        </div>
+        <div class="career-card__content">
+          <div class="career-card__title">셀아처 코스메틱 · 회계/경영관리</div>
+          <div class="career-card__desc">
+            회계 실무를 담당하며 숫자 데이터 속에서 <span class="kw">오차를 허용하지 않는 꼼꼼함</span>과
+            데이터 무결성 검증 능력을 길렀습니다. 이러한 경험은 게임 밸런스 설계에서
+            미세한 수치를 다루는 데 있어 강력한 무기가 되었습니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="intro-section">
+    <div class="intro-section__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">보유 툴</h2>
+      </div>
+      <!-- 별점 평점 시스템 — 3컬럼 카테고리별 분류 -->
+      <div class="skill-rating-grid">
+
+        <!-- 컬럼 1: ENGINE — 게임 엔진 / 구현 -->
+        <div class="skill-rating-column">
+          <div class="skill-rating-column__header">
+            <span class="skill-rating-column__label">Engine</span>
+            <span class="skill-rating-column__line"></span>
+          </div>
+          <!-- ★★★★☆ 숙련 — GameMaker Studio 2 -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">GameMaker Studio 2</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--adept">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--adept">숙련</span>
+            </div>
+            <div class="skill-rating-item__note">PTD 1인 개발 · 기획부터 구현·빌드까지 전 과정</div>
+          </div>
+          <!-- ★★★☆☆ 활용 — Unity -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Unity</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--applied">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--applied">활용</span>
+            </div>
+            <div class="skill-rating-item__note">엔진 환경 이해 · 기본 씬·컴포넌트 작업 가능</div>
+          </div>
+        </div>
+
+        <!-- 컬럼 2: DOCS & DATA — 기획서 작성 + 데이터 작업 -->
+        <div class="skill-rating-column">
+          <div class="skill-rating-column__header">
+            <span class="skill-rating-column__label">Docs &amp; Data</span>
+            <span class="skill-rating-column__line"></span>
+          </div>
+          <!-- ★★★★★ 전문 — Excel (회계 4년 실무 베이스) -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Excel</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--expert">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--expert">전문</span>
+            </div>
+            <div class="skill-rating-item__note">회계 4년 실무 · PTD 웨이브 시뮬레이션 시트 직접 제작</div>
+          </div>
+          <!-- ★★★★☆ 숙련 — Notion -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Notion</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--adept">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--adept">숙련</span>
+            </div>
+            <div class="skill-rating-item__note">3개 프로젝트 기획서 베이스 · 데이터베이스·연동 활용</div>
+          </div>
+          <!-- ★★★★☆ 숙련 — Figma -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Figma</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--adept">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--adept">숙련</span>
+            </div>
+            <div class="skill-rating-item__note">Donut Crash 인게임 UI 프로토타입 · 320×568 픽셀 정의</div>
+          </div>
+          <!-- ★★☆☆☆ 사용 — MS Word -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">MS Word</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--using">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--using">사용</span>
+            </div>
+            <div class="skill-rating-item__note">기본 문서 작성 · 양식 정리</div>
+          </div>
+          <!-- ★★☆☆☆ 사용 — MS PowerPoint -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">MS PowerPoint</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--using">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--using">사용</span>
+            </div>
+            <div class="skill-rating-item__note">기본 슬라이드 작성 · 발표 자료 정리</div>
+          </div>
+        </div>
+
+        <!-- 컬럼 3: COMMS & AI — 협업 + AI 보조 -->
+        <div class="skill-rating-column">
+          <div class="skill-rating-column__header">
+            <span class="skill-rating-column__label">Comms &amp; AI</span>
+            <span class="skill-rating-column__line"></span>
+          </div>
+          <!-- ★★★☆☆ 활용 — ChatGPT -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">ChatGPT</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--applied">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--applied">활용</span>
+            </div>
+            <div class="skill-rating-item__note">기획 방향 검토 · 문서 정리 보조</div>
+          </div>
+          <!-- ★★★☆☆ 활용 — Claude -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Claude</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--applied">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--applied">활용</span>
+            </div>
+            <div class="skill-rating-item__note">디자인 시스템 적용 · 단계별 의사결정 보조</div>
+          </div>
+          <!-- ★★☆☆☆ 사용 — Jira -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Jira</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--using">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--using">사용</span>
+            </div>
+            <div class="skill-rating-item__note">이슈 트래킹 기본 사용</div>
+          </div>
+          <!-- ★★☆☆☆ 사용 — Slack -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Slack</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--using">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--using">사용</span>
+            </div>
+            <div class="skill-rating-item__note">팀 협업 기본 사용</div>
+          </div>
+          <!-- ★★☆☆☆ 사용 — Gemini -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Gemini</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--using">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--using">사용</span>
+            </div>
+            <div class="skill-rating-item__note">보조 검색·정리 도구로 사용</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- ============ DONUTCRASH PAGE ============ -->
+<!-- ============================================================ -->
+<main class="page" data-page="donutcrash">
+
+  <section class="hero-band">
+    <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
+    <div class="hero-band__bg" data-bg-img="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif"></div>
+    <div class="hero-band__mask"></div>
+    <div class="hero-band__inner">
+      <h1 class="hero-band__title">Donut Crash</h1>
+
+      <div class="hero-band__pair">
+        <div class="media-slider" data-slider>
+          <div class="media-slider__frame">
+            <div class="media-slider__slide media-slider__slide--active" data-slide="0">
+              <img data-img-src="donutcrash/slide-1.png" alt="Donut Crash 게임플레이 1">
+              <div class="media-slider__caption">턴제 물리 충돌 전투 — 5개의 도넛 덱으로 진행</div>
+            </div>
+            <div class="media-slider__slide" data-slide="1">
+              <img data-img-src="donutcrash/slide-2.png" alt="Donut Crash 게임플레이 2">
+              <div class="media-slider__caption">스킬 발동 연출 — 라이징 스타</div>
+            </div>
+            <div class="media-slider__slide" data-slide="2">
+              <img data-img-src="donutcrash/slide-3.png" alt="Donut Crash 게임플레이 3">
+              <div class="media-slider__caption">데미지 계산 시뮬레이션 (Excel)</div>
+            </div>
+            <div class="media-slider__slide" data-slide="3">
+              <img data-img-src="donutcrash/slide-4.png" alt="Donut Crash 게임플레이 4">
+              <div class="media-slider__caption">인게임 UI 와이어프레임</div>
+            </div>
+          </div>
+          <div class="media-slider__thumbs">
+            <button class="media-slider__thumb media-slider__thumb--active" data-thumb="0" aria-label="슬라이드 1">
+              <img data-img-src="donutcrash/thumb-1.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="1" aria-label="슬라이드 2">
+              <img data-img-src="donutcrash/thumb-2.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 3">
+              <img data-img-src="donutcrash/thumb-3.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="3" aria-label="슬라이드 4">
+              <img data-img-src="donutcrash/thumb-4.png" alt="">
+            </button>
+          </div>
+        </div>
+
+        <aside class="info-sidebar">
+          <div class="info-sidebar__title-art">
+            <img data-img-src="donutcrash/title-art.png" alt="Donut Crash 타이틀 아트">
+          </div>
+          <p class="info-sidebar__blurb">
+            5개의 도넛 덱을 활용한 <span class="kw">턴제 물리 충돌 전투</span> 게임.
+            5가지 고유 스탯의 상성 관계와 티어 성장 곡선을 설계했습니다.
+          </p>
+          <div class="info-sidebar__meta">
+            <span class="info-sidebar__meta-label">장르:</span>
+            <span class="info-sidebar__meta-value">턴제 액션 / 물리 충돌</span>
+            <span class="info-sidebar__meta-label">담당:</span>
+            <span class="info-sidebar__meta-value">시스템 · 밸런스 기획</span>
+            <span class="info-sidebar__meta-label">기획 기간:</span>
+            <span class="info-sidebar__meta-value">2025.06 ~ 2025.11</span>
+            <span class="info-sidebar__meta-label">툴:</span>
+            <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
+            <span class="info-sidebar__meta-label">엔진:</span>
+            <span class="info-sidebar__meta-value">Unity</span>
+          </div>
+          <div>
+            <div class="info-sidebar__tags-label">이 프로젝트의 인기 태그:</div>
+            <div class="info-sidebar__tags">
+              <span class="tag-pill">턴제 전투</span>
+              <span class="tag-pill">물리 충돌</span>
+              <span class="tag-pill">밸런스 설계</span>
+              <span class="tag-pill">스킬 시스템</span>
+              <span class="tag-pill">데미지 공식</span>
+              <span class="tag-pill">데이터 시뮬레이션</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="purchase-box">
+        <div class="purchase-box__heading">Donut Crash — 플레이 가능한 빌드</div>
+        <div class="purchase-box__actions">
+          <button class="cta-button-secondary" data-open-links data-links-key="donutcrash">자료 모두 보기 →</button>
+          <a class="cta-button-primary" href="https://example.com/donutcrash-download" target="_blank" rel="noopener">게임 다운로드</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-showcase">
+    <div class="about-showcase__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">About this project</h2>
+      </div>
+      <div class="about-showcase__list">
+        <article class="about-item">
+          <div class="about-item__media">
+            <img data-img-src="donutcrash/about-1.png" alt="턴제 충돌 시스템 다이어그램">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">5개 덱의 턴제 물리 충돌 전투</h3>
+            <p class="about-item__body">
+              도넛 5장의 덱을 구성하고 턴마다 한 장씩 발사하는 충돌 기반 전투 로직을 설계했습니다.
+              <span class="kw">속도, 질량, 충돌 각도</span>가 데미지 계산에 직접 반영되어
+              단순한 카드 게임이 아닌 물리적 직관이 작동하는 전투를 만들었습니다.
+            </p>
+          </div>
+        </article>
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="donutcrash/about-2.png" alt="데미지 계산식 플로우차트">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">정밀한 데미지 공식 설계</h3>
+            <p class="about-item__body">
+              <span class="kw">DMG = (ATK − DEF) × Speed/10</span> 의 기본 공식을 시작으로
+              크리티컬, 최소 피해 보장, 예외 처리까지 단일 플로우차트로 정리했습니다.
+              <span class="kw">단 1의 수치 차이</span>가 만드는 타격감을 시뮬레이션으로 검증했습니다.
+            </p>
+          </div>
+        </article>
+        <article class="about-item">
+          <div class="about-item__media">
+            <img data-img-src="donutcrash/about-3.png" alt="스킬 시스템 테이블">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">모듈화된 스킬 시스템</h3>
+            <p class="about-item__body">
+              도넛별 고유 스킬을 <span class="kw">데이터 테이블 기반</span>으로 구조화하여
+              확장과 수정이 용이하도록 설계했습니다.
+              동일 효과의 스킬은 중첩되지 않고 지속 시간만 갱신되는 일관성 규칙을 정립했습니다.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="planning-gallery">
+    <div class="planning-gallery__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <div class="planning-gallery__grid">
+        <button class="doc-tile doc-tile--design"
+                data-pdf-modal="DonutCrash전투_시스템_기획서.pdf"
+                data-modal-title="전투 시스템 기획서">
+          <div class="doc-tile__preview">
+            <img data-img-src="donutcrash/doc-combat.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">전투 시스템 기획서</div>
+            <div class="doc-tile__meta">턴제 충돌 로직 · 승리 조건</div>
+          </div>
+        </button>
+        <button class="doc-tile doc-tile--research"
+                data-pdf-modal="DonutCrash전투_데미지_계산식.pdf"
+                data-modal-title="전투 데미지 계산식">
+          <div class="doc-tile__preview">
+            <img data-img-src="donutcrash/doc-damage.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">전투 데미지 계산식</div>
+            <div class="doc-tile__meta">데미지 공식 · 크리티컬 · 예외처리</div>
+          </div>
+        </button>
+        <button class="doc-tile doc-tile--design"
+                data-pdf-modal="DonutCrash스킬_시스템_기획서.pdf"
+                data-modal-title="스킬 시스템 기획서">
+          <div class="doc-tile__preview">
+            <img data-img-src="donutcrash/doc-skill.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">스킬 시스템 기획서</div>
+            <div class="doc-tile__meta">스킬 트리거 · 데이터 테이블 구조</div>
+          </div>
+        </button>
+        <button class="doc-tile doc-tile--build"
+                data-pdf-modal="DonutCrash인게임_ui_기획서.pdf"
+                data-modal-title="인게임 UI 기획서">
+          <div class="doc-tile__preview">
+            <img data-img-src="donutcrash/doc-ui.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">인게임 UI 기획서</div>
+            <div class="doc-tile__meta">화면 흐름 · 와이어프레임</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- ============ PATHTOWERDEFENCE PAGE ============ -->
+<!-- ============================================================ -->
+<main class="page" data-page="ptd">
+
+  <section class="hero-band">
+    <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
+    <div class="hero-band__bg" data-bg-img="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif"></div>
+    <div class="hero-band__mask"></div>
+    <div class="hero-band__inner">
+      <h1 class="hero-band__title">PathTowerDefence</h1>
+
+      <div class="hero-band__pair">
+        <div class="media-slider" data-slider>
+          <div class="media-slider__frame">
+            <div class="media-slider__slide media-slider__slide--active" data-slide="0">
+              <img data-img-src="ptd/slide-1.png" alt="PTD 게임플레이 1">
+              <div class="media-slider__caption">웨이브 방어 — 무작위 경로 설계</div>
+            </div>
+            <div class="media-slider__slide" data-slide="1">
+              <img data-img-src="ptd/slide-2.png" alt="PTD 게임플레이 2">
+              <div class="media-slider__caption">4종족 시너지 조합 시스템</div>
+            </div>
+            <div class="media-slider__slide" data-slide="2">
+              <img data-img-src="ptd/slide-3.png" alt="PTD 게임플레이 3">
+              <div class="media-slider__caption">웨이브 밸런싱 시뮬레이션</div>
+            </div>
+          </div>
+          <div class="media-slider__thumbs">
+            <button class="media-slider__thumb media-slider__thumb--active" data-thumb="0" aria-label="슬라이드 1">
+              <img data-img-src="ptd/thumb-1.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="1" aria-label="슬라이드 2">
+              <img data-img-src="ptd/thumb-2.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 3">
+              <img data-img-src="ptd/thumb-3.png" alt="">
+            </button>
+          </div>
+        </div>
+
+        <aside class="info-sidebar">
+          <div class="info-sidebar__title-art">
+            <img data-img-src="ptd/title-art.png" alt="PathTowerDefence 타이틀 아트">
+          </div>
+          <p class="info-sidebar__blurb">
+            <span class="kw">타워로 경로를 직접 설계</span>하는 차세대 TD.
+            4종족 시너지와 무작위 상점 시스템으로 매판 다른 전략 설계를 유도합니다.
+          </p>
+          <div class="info-sidebar__meta">
+            <span class="info-sidebar__meta-label">장르:</span>
+            <span class="info-sidebar__meta-value">타워디펜스 / 전략 시뮬레이션</span>
+            <span class="info-sidebar__meta-label">담당:</span>
+            <span class="info-sidebar__meta-value">시스템 설계 · 밸런스 기획</span>
+            <span class="info-sidebar__meta-label">기획 기간:</span>
+            <span class="info-sidebar__meta-value">2025.01 ~ 2025.05</span>
+            <span class="info-sidebar__meta-label">툴:</span>
+            <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
+            <span class="info-sidebar__meta-label">엔진:</span>
+            <span class="info-sidebar__meta-value">GameMaker Studio 2</span>
+          </div>
+          <div>
+            <div class="info-sidebar__tags-label">이 프로젝트의 인기 태그:</div>
+            <div class="info-sidebar__tags">
+              <span class="tag-pill">타워디펜스</span>
+              <span class="tag-pill">경로 설계</span>
+              <span class="tag-pill">종족 시너지</span>
+              <span class="tag-pill">웨이브 밸런싱</span>
+              <span class="tag-pill">무작위 상점</span>
+              <span class="tag-pill">1인 개발</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="purchase-box">
+        <div class="purchase-box__heading">PathTowerDefence — 플레이 가능한 빌드</div>
+        <div class="purchase-box__actions">
+          <button class="cta-button-secondary" data-open-links data-links-key="ptd">자료 모두 보기 →</button>
+          <a class="cta-button-primary" href="https://example.com/ptd-download" target="_blank" rel="noopener">게임 다운로드</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-showcase">
+    <div class="about-showcase__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">About this project</h2>
+      </div>
+      <div class="about-showcase__list">
+        <article class="about-item">
+          <div class="about-item__media">
+            <img data-img-src="ptd/about-1.png" alt="경로 설계 시스템">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">타워로 경로를 직접 설계</h3>
+            <p class="about-item__body">
+              기존 TD의 고정 경로에서 벗어나 <span class="kw">매 게임마다 무작위 경로</span>가 생성되고,
+              플레이어가 타워 배치로 적의 동선을 유도합니다. 도착 지점만 막지 않으면 자유롭게 배치 가능한
+              주도적 설계의 재미를 제공합니다.
+            </p>
+          </div>
+        </article>
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="ptd/about-2.png" alt="종족 시너지 시스템">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">4종족 시너지 시스템</h3>
+            <p class="about-item__body">
+              <span class="kw">인간, 엘프, 드워프, 용족</span> 4종족 타워를 조합하여 공격력, 공격속도,
+              적 감속, 골드 수급 등 고유 시너지를 발동합니다. 종족 조합과 상점 구성에 따라
+              유저 맞춤형 전략 설계가 가능합니다.
+            </p>
+          </div>
+        </article>
+        <article class="about-item">
+          <div class="about-item__media">
+            <img data-img-src="ptd/about-3.png" alt="웨이브 밸런싱 시뮬레이션">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">엑셀 기반 웨이브 밸런싱</h3>
+            <p class="about-item__body">
+              몬스터의 이동 속도와 체력 증가 폭을 <span class="kw">엑셀 시뮬레이션</span>으로 검증하여
+              후반부 긴장감을 유지하는 난이도 곡선을 설계했습니다. 타워별 데미지 효율을 계산해
+              특정 타워만 선호되는 현상을 방지했습니다.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="planning-gallery">
+    <div class="planning-gallery__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <div class="planning-gallery__grid">
+        <button class="doc-tile doc-tile--design"
+                data-pdf-modal="PathTowerDefence컨셉기획서.pdf"
+                data-modal-title="PTD 컨셉 기획서">
+          <div class="doc-tile__preview">
+            <img data-img-src="ptd/doc-concept.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">PTD 컨셉 기획서</div>
+            <div class="doc-tile__meta">차별점 · 시장조사 · 핵심 컨셉</div>
+          </div>
+        </button>
+        <button class="doc-tile doc-tile--research"
+                data-pdf-modal="PTD_Simulate_F1.pdf"
+                data-modal-title="웨이브 밸런싱 시뮬레이션">
+          <div class="doc-tile__preview">
+            <img data-img-src="ptd/doc-simulate.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">웨이브 밸런싱 시뮬레이션</div>
+            <div class="doc-tile__meta">난이도 곡선 · 타워 데미지 효율</div>
+          </div>
+        </button>
+        <button class="doc-tile doc-tile--build"
+                data-pdf-modal="PTD_ScreenShot.pdf"
+                data-modal-title="게임 스크린샷">
+          <div class="doc-tile__preview">
+            <img data-img-src="ptd/doc-screenshot.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">게임 스크린샷</div>
+            <div class="doc-tile__meta">실제 빌드 화면 모음</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- ============ 생쥐 대탈출 PAGE ============ -->
+<!-- ============================================================ -->
+<main class="page" data-page="mouse">
+
+  <section class="hero-band">
+    <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
+    <div class="hero-band__bg" data-bg-img="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif"></div>
+    <div class="hero-band__mask"></div>
+    <div class="hero-band__inner">
+      <h1 class="hero-band__title">생쥐 대탈출</h1>
+
+      <div class="hero-band__pair">
+        <div class="media-slider" data-slider>
+          <div class="media-slider__frame">
+            <div class="media-slider__slide media-slider__slide--active" data-slide="0">
+              <img data-img-src="mouse/slide-1.png" alt="생쥐 대탈출 게임플레이 1">
+              <div class="media-slider__caption">터치 시 재화 획득 — 핵심 게임 루프</div>
+            </div>
+            <div class="media-slider__slide" data-slide="1">
+              <img data-img-src="mouse/slide-2.png" alt="생쥐 대탈출 게임플레이 2">
+              <div class="media-slider__caption">방치형 자원 누적 시스템</div>
+            </div>
+            <div class="media-slider__slide" data-slide="2">
+              <img data-img-src="mouse/slide-3.png" alt="생쥐 대탈출 게임플레이 3">
+              <div class="media-slider__caption">UI 흐름도 — 메인부터 팝업까지</div>
+            </div>
+          </div>
+          <div class="media-slider__thumbs">
+            <button class="media-slider__thumb media-slider__thumb--active" data-thumb="0" aria-label="슬라이드 1">
+              <img data-img-src="mouse/thumb-1.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="1" aria-label="슬라이드 2">
+              <img data-img-src="mouse/thumb-2.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 3">
+              <img data-img-src="mouse/thumb-3.png" alt="">
+            </button>
+          </div>
+        </div>
+
+        <aside class="info-sidebar">
+          <div class="info-sidebar__title-art">
+            <img data-img-src="mouse/title-art.png" alt="생쥐 대탈출 타이틀 아트">
+          </div>
+          <p class="info-sidebar__blurb">
+            터치 한 번으로 재화를 모으는 <span class="kw">방치형 캐주얼 게임</span>.
+            성장 곡선과 재화 인플레이션 관리에 초점을 둔 경제 구조를 설계했습니다.
+          </p>
+          <div class="info-sidebar__meta">
+            <span class="info-sidebar__meta-label">장르:</span>
+            <span class="info-sidebar__meta-value">방치형 / 캐주얼</span>
+            <span class="info-sidebar__meta-label">담당:</span>
+            <span class="info-sidebar__meta-value">재화 경제 구조 설계</span>
+            <span class="info-sidebar__meta-label">기획 기간:</span>
+            <span class="info-sidebar__meta-value">2025.07 ~ 2025.10</span>
+            <span class="info-sidebar__meta-label">툴:</span>
+            <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
+            <span class="info-sidebar__meta-label">엔진:</span>
+            <span class="info-sidebar__meta-value">Unity</span>
+          </div>
+          <div>
+            <div class="info-sidebar__tags-label">이 프로젝트의 인기 태그:</div>
+            <div class="info-sidebar__tags">
+              <span class="tag-pill">방치형</span>
+              <span class="tag-pill">재화 경제</span>
+              <span class="tag-pill">성장 곡선</span>
+              <span class="tag-pill">광고 수익 모델</span>
+              <span class="tag-pill">UI 흐름 설계</span>
+              <span class="tag-pill">모바일</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="purchase-box">
+        <div class="purchase-box__heading">생쥐 대탈출 — 플레이 가능한 빌드</div>
+        <div class="purchase-box__actions">
+          <button class="cta-button-secondary" data-open-links data-links-key="mouse">자료 모두 보기 →</button>
+          <a class="cta-button-primary" href="https://example.com/mouse-download" target="_blank" rel="noopener">게임 다운로드</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-showcase">
+    <div class="about-showcase__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">About this project</h2>
+      </div>
+      <div class="about-showcase__list">
+        <article class="about-item">
+          <div class="about-item__media">
+            <img data-img-src="mouse/about-1.png" alt="터치 재화 획득 루프">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">직관적인 게임 루프</h3>
+            <p class="about-item__body">
+              <span class="kw">터치 → 재화 획득 → 성장 재투자</span>의 단순 루프로
+              즉각적인 보상과 성취감을 제공합니다. 복잡한 조작 없이도 자연스럽게
+              성장 동기가 유지되는 구조를 설계했습니다.
+            </p>
+          </div>
+        </article>
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="mouse/about-2.png" alt="재화 경제 구조">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">장기 플레이를 위한 경제 구조</h3>
+            <p class="about-item__body">
+              재화의 <span class="kw">생성과 소모 구조를 데이터로 구조화</span>하여
+              연구, 장소 해금, 서브 캐릭터 해금 등 다층 소모처를 설계했습니다.
+              인플레이션 관리로 후반부에도 성장 동기가 유지되도록 밸런싱했습니다.
+            </p>
+          </div>
+        </article>
+        <article class="about-item">
+          <div class="about-item__media">
+            <img data-img-src="mouse/about-3.png" alt="광고 수익 모델">
+          </div>
+          <div class="about-item__text">
+            <h3 class="about-item__heading">광고 수익 모델 연동</h3>
+            <p class="about-item__body">
+              성장이 둔화되는 지점을 의도적으로 설계하고, 이를 극복하기 위한 보상을
+              <span class="kw">광고 시청과 결합</span>하여 자연스러운 수익 발생 구조를 만들었습니다.
+              유저 경험을 해치지 않는 시점을 데이터로 검증했습니다.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="planning-gallery">
+    <div class="planning-gallery__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <div class="planning-gallery__grid">
+        <button class="doc-tile doc-tile--design"
+                data-pdf-modal="생쥐대탈출_컨셉_기획서.pdf"
+                data-modal-title="생쥐 대탈출 컨셉 기획서">
+          <div class="doc-tile__preview">
+            <img data-img-src="mouse/doc-concept.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">컨셉 기획서</div>
+            <div class="doc-tile__meta">기획 의도 · 핵심 게임 루프</div>
+          </div>
+        </button>
+        <button class="doc-tile doc-tile--build"
+                data-pdf-modal="생쥐대탈출_UI_기획서.pdf"
+                data-modal-title="생쥐 대탈출 UI 기획서">
+          <div class="doc-tile__preview">
+            <img data-img-src="mouse/doc-ui.png" alt="">
+          </div>
+          <div class="doc-tile__caption">
+            <div class="doc-tile__title">UI 기획서</div>
+            <div class="doc-tile__meta">UI 흐름도 · 페이지 상세 설명</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER (모든 페이지 공통) ============ -->
+<footer class="footer-band">
+  <div class="footer-band__inner">
+    <a class="footer-band__contact" href="mailto:koioas1@gmail.com">koioas1@gmail.com</a>
+    <div class="footer-band__copy">© 2026 서윤준 · Steam-style portfolio</div>
+  </div>
+</footer>
+
+<!-- ============ MODAL OVERLAY ============ -->
+<!-- 문서 타일/외부 링크용 모달 — 기본 hidden -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-overlay__backdrop" data-modal-close></div>
+  <div class="modal-overlay__panel">
+    <div class="modal-overlay__header">
+      <h2 class="modal-overlay__title" id="modal-title">문서 제목</h2>
+      <button class="modal-overlay__close" data-modal-close aria-label="모달 닫기">×</button>
+    </div>
+    <div class="modal-overlay__body" id="modal-body">
+      <!-- PDF iframe 또는 외부 링크 리스트 동적 삽입 -->
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCRIPT ============ -->
+<script>
+// ============================================================
+// 외부 리소스 베이스 URL 미러 — CSS 변수와 동일한 값
+// ============================================================
+const MEDIA_BASE = {
+  images: 'https://koioas1.github.io/syj_portfolio/images/',
+  pdf: 'https://koioas1.github.io/syj_portfolio/pdf/'
+};
+
+// ============================================================
+// PRESS START 인트로 후방 미디어 슬라이더 데이터
+// type: 'video' (MP4) 또는 'image' (GIF/PNG/JPG)
+// src: MEDIA_BASE.images 기준 상대 경로
+// duration: 이미지 표시 시간(ms). 비디오는 ended 이벤트로 자동 전환
+// ============================================================
+const INTRO_MEDIA = [
+  { type: 'image', src: "https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면안되는파일.gif", duration: 6000 },
+  { type: 'video', src: 'intro-bg/mouse-gameplay.mp4' },
+  { type: 'image', src: 'intro-bg/simulation-data.gif', duration: 6000 }
+];
+
+// 이미지 기본 표시 시간 (지정 안된 경우)
+const DEFAULT_IMAGE_DURATION = 6000;
+
+// ============================================================
+// 프로젝트별 외부 링크 데이터 — '자료 모두 보기' 모달에서 사용
+// ============================================================
+const EXTERNAL_LINKS = {
+  donutcrash: [
+    { label: 'GitHub 저장소', url: 'https://github.com/koioas1' },
+    { label: 'Notion 기획 문서', url: 'https://www.notion.so/' },
+    { label: 'Figma 프로토타입', url: 'https://www.figma.com/' }
+  ],
+  ptd: [
+    { label: 'GitHub 저장소', url: 'https://github.com/koioas1' },
+    { label: 'Notion 기획 문서', url: 'https://www.notion.so/' },
+    { label: 'Figma 프로토타입', url: 'https://www.figma.com/' }
+  ],
+  mouse: [
+    { label: 'GitHub 저장소', url: 'https://github.com/koioas1' },
+    { label: 'Notion 기획 문서', url: 'https://www.notion.so/' },
+    { label: 'Figma 프로토타입', url: 'https://www.figma.com/' }
+  ]
+};
+
+// 유효한 페이지 키 목록 — 라우팅 검증용
+const VALID_PAGES = ['intro', 'donutcrash', 'ptd', 'mouse'];
+
+// ============================================================
+// 외부 이미지 일괄 주입
+// 세 가지 패턴 지원:
+// (1) data-img-src: MEDIA_BASE.images 기준 상대 경로 → src
+// (2) data-img-direct: 절대 URL 직접 사용 → src (외부 도메인 이미지)
+// (3) data-bg-img: 절대 URL → background-image (히어로 배경 등)
+// ============================================================
+function injectImages() {
+  // (1) 기본 베이스 URL 기준 상대 경로
+  document.querySelectorAll('[data-img-src]').forEach(function(el) {
+    const relativePath = el.getAttribute('data-img-src');
+    el.src = MEDIA_BASE.images + relativePath;
+  });
+  // (2) 절대 URL을 src에 직접 주입 — 외부 도메인 이미지/GIF
+  document.querySelectorAll('[data-img-direct]').forEach(function(el) {
+    const directUrl = el.getAttribute('data-img-direct');
+    el.src = directUrl;
+  });
+  // (3) 절대 URL을 background-image로 주입 — 히어로 배경 레이어
+  document.querySelectorAll('[data-bg-img]').forEach(function(el) {
+    const directUrl = el.getAttribute('data-bg-img');
+    el.style.backgroundImage = 'url("' + directUrl + '")';
+  });
+}
+
+// ============================================================
+// 페이지 전환 로직 — 활성 페이지만 표시, 스위처 활성 상태 동기화
+// URL 해시(#donutcrash 등)와 동기화하여 뒤로가기/북마크 지원
+// ============================================================
+function showPage(pageKey) {
+  // 유효하지 않은 키는 기본값 intro로 폴백
+  if (VALID_PAGES.indexOf(pageKey) === -1) {
+    pageKey = 'intro';
+  }
+
+  // 모든 페이지 컨테이너 비활성화 후 대상만 활성화
+  document.querySelectorAll('.page').forEach(function(page) {
+    page.classList.toggle('is-active', page.getAttribute('data-page') === pageKey);
+  });
+
+  // 스위처 칩 활성 상태 동기화
+  document.querySelectorAll('.project-switcher__chip').forEach(function(chip) {
+    const isActive = chip.getAttribute('data-page-link') === pageKey;
+    chip.classList.toggle('project-switcher__chip--active', isActive);
+    if (isActive) {
+      chip.setAttribute('aria-current', 'page');
+    } else {
+      chip.removeAttribute('aria-current');
+    }
+  });
+
+  // 페이지 상단으로 스크롤
+  window.scrollTo(0, 0);
+
+  // 활성화된 페이지 내의 슬라이더만 재시작
+  initSlidersOnActivePage();
+}
+
+// 페이지 링크 클릭 바인딩 — 스위처 칩, 브랜드 로고, 인트로 카드
+function bindPageLinks() {
+  document.querySelectorAll('[data-page-link]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      const pageKey = el.getAttribute('data-page-link');
+      window.location.hash = pageKey;
+    });
+  });
+}
+
+// 해시 변경 감지 — 뒤로가기/앞으로가기/직접 입력 모두 처리
+function bindHashRouter() {
+  window.addEventListener('hashchange', function() {
+    const pageKey = window.location.hash.replace('#', '') || 'intro';
+    showPage(pageKey);
+  });
+}
+
+// ============================================================
+// 프로젝트 페이지 슬라이더 — 자동 회전, 5초 간격
+// 페이지 전환 시 활성 페이지의 슬라이더만 재시작
+// ============================================================
+const sliderInstances = new Map();
+
+function initSlider(sliderEl) {
+  // 이미 초기화된 슬라이더면 인터벌만 재시작
+  if (sliderInstances.has(sliderEl)) {
+    sliderInstances.get(sliderEl).start();
+    return;
+  }
+
+  const slides = sliderEl.querySelectorAll('.media-slider__slide');
+  const thumbs = sliderEl.querySelectorAll('.media-slider__thumb');
+  let currentIndex = 0;
+  let intervalId = null;
+  const ROTATE_MS = 5000;
+
+  function goTo(index) {
+    slides.forEach(function(slide, i) {
+      slide.classList.toggle('media-slider__slide--active', i === index);
+    });
+    thumbs.forEach(function(thumb, i) {
+      thumb.classList.toggle('media-slider__thumb--active', i === index);
+    });
+    currentIndex = index;
+  }
+
+  function next() {
+    goTo((currentIndex + 1) % slides.length);
+  }
+
+  function start() {
+    stop();
+    intervalId = setInterval(next, ROTATE_MS);
+  }
+  function stop() {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  }
+
+  // 썸네일 클릭 — 자동 회전 정지 후 점프
+  thumbs.forEach(function(thumb, i) {
+    thumb.addEventListener('click', function() {
+      stop();
+      goTo(i);
+      start();
+    });
+  });
+
+  // 호버 시 일시정지
+  sliderEl.addEventListener('mouseenter', stop);
+  sliderEl.addEventListener('mouseleave', start);
+
+  start();
+  sliderInstances.set(sliderEl, { start: start, stop: stop });
+}
+
+// 활성 페이지의 슬라이더만 재시작, 비활성 슬라이더는 정지
+function initSlidersOnActivePage() {
+  document.querySelectorAll('[data-slider]').forEach(function(sliderEl) {
+    const parentPage = sliderEl.closest('.page');
+    if (parentPage && parentPage.classList.contains('is-active')) {
+      initSlider(sliderEl);
+    } else if (sliderInstances.has(sliderEl)) {
+      sliderInstances.get(sliderEl).stop();
+    }
+  });
+}
+
+// ============================================================
+// 모달 열기/닫기 핸들러 — PDF iframe + 외부 링크 리스트
+// ============================================================
+function initModal() {
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modal-title');
+  const modalBody = document.getElementById('modal-body');
+
+  // PDF 모달 열기 — 타일 클릭
+  function openPdfModal(filename, title) {
+    modalTitle.textContent = title;
+    modalBody.innerHTML = '<iframe class="modal-overlay__iframe" src="' + MEDIA_BASE.pdf + filename + '" title="' + title + '"></iframe>';
+    modal.classList.add('is-open');
+    document.body.classList.add('is-modal-open');
+  }
+
+  // 외부 링크 모달 열기 — 프로젝트별 EXTERNAL_LINKS 데이터 사용
+  function openLinksModal(projectKey) {
+    const links = EXTERNAL_LINKS[projectKey] || [];
+    modalTitle.textContent = '관련 자료 모두 보기';
+    let html = '<div class="modal-overlay__links">';
+    links.forEach(function(link) {
+      html += '<a class="modal-overlay__link" href="' + link.url + '" target="_blank" rel="noopener">' + link.label + ' →</a>';
+    });
+    html += '</div>';
+    modalBody.innerHTML = html;
+    modal.classList.add('is-open');
+    document.body.classList.add('is-modal-open');
+  }
+
+  // 모달 닫기 — iframe HTML 클리어로 메모리 해제
+  function closeModal() {
+    modal.classList.remove('is-open');
+    document.body.classList.remove('is-modal-open');
+    modalBody.innerHTML = '';
+  }
+
+  // 문서 타일 클릭 바인딩
+  document.querySelectorAll('[data-pdf-modal]').forEach(function(tile) {
+    tile.addEventListener('click', function() {
+      const filename = tile.getAttribute('data-pdf-modal');
+      const title = tile.getAttribute('data-modal-title') || '문서';
+      openPdfModal(filename, title);
+    });
+  });
+
+  // 외부 링크 트리거 바인딩
+  document.querySelectorAll('[data-open-links]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const projectKey = btn.getAttribute('data-links-key');
+      openLinksModal(projectKey);
+    });
+  });
+
+  // 클로즈 트리거 — X 버튼, 배경 클릭
+  document.querySelectorAll('[data-modal-close]').forEach(function(el) {
+    el.addEventListener('click', closeModal);
+  });
+
+  // ESC 키 — 모달 닫기
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
+  });
+}
+
+// ============================================================
+// PRESS START 인트로 — 후방 미디어 슬라이더 + 통과 로직
+// ============================================================
+function initIntroMediaSlider() {
+  const layer = document.getElementById('introMediaLayer');
+  const indicator = document.getElementById('introMediaIndicator');
+
+  if (!INTRO_MEDIA || INTRO_MEDIA.length === 0) return null;
+
+  // 각 미디어 슬라이드 DOM 생성
+  INTRO_MEDIA.forEach(function(item, i) {
+    const slide = document.createElement('div');
+    slide.className = 'intro__media';
+    slide.setAttribute('data-media-index', i);
+
+    let mediaEl;
+    if (item.type === 'video') {
+      // MP4 비디오 — 음소거, 자동재생, 인라인
+      mediaEl = document.createElement('video');
+      mediaEl.src = MEDIA_BASE.images + item.src;
+      mediaEl.muted = true;
+      mediaEl.playsInline = true;
+      mediaEl.preload = 'auto';
+    } else {
+      // GIF/이미지
+      mediaEl = document.createElement('img');
+      mediaEl.src = MEDIA_BASE.images + item.src;
+      mediaEl.alt = '';
+    }
+
+    slide.appendChild(mediaEl);
+    layer.appendChild(slide);
+
+    // 진행 도트 생성
+    const dot = document.createElement('div');
+    dot.className = 'intro__media-dot';
+    dot.setAttribute('data-dot-index', i);
+    indicator.appendChild(dot);
+  });
+
+  const slides = layer.querySelectorAll('.intro__media');
+  const dots = indicator.querySelectorAll('.intro__media-dot');
+  let currentIndex = 0;
+  let timeoutId = null;
+
+  // 특정 인덱스로 전환 — 슬라이드 활성화 + 도트 동기화 + 비디오 재생
+  function showSlide(index) {
+    slides.forEach(function(slide, i) {
+      const isActive = i === index;
+      slide.classList.toggle('is-active', isActive);
+
+      const video = slide.querySelector('video');
+      if (video) {
+        if (isActive) {
+          video.currentTime = 0;
+          video.play().catch(function() {
+            // 자동재생 차단 시 무시 — 이미지 폴백처럼 동작
+          });
+        } else {
+          video.pause();
+        }
+      }
+    });
+
+    dots.forEach(function(dot, i) {
+      dot.classList.toggle('is-active', i === index);
+    });
+
+    currentIndex = index;
+    scheduleNext();
+  }
+
+  // 다음 슬라이드 예약 — 비디오는 ended 이벤트, 이미지는 setTimeout
+  function scheduleNext() {
+    clearTimeout(timeoutId);
+
+    const currentItem = INTRO_MEDIA[currentIndex];
+    const currentSlide = slides[currentIndex];
+
+    if (currentItem.type === 'video') {
+      const video = currentSlide.querySelector('video');
+      video.addEventListener('ended', goNext, { once: true });
+      // 안전장치: 30초 후 강제 전환 (비디오 로드 실패 대비)
+      timeoutId = setTimeout(goNext, 30000);
+    } else {
+      const duration = currentItem.duration || DEFAULT_IMAGE_DURATION;
+      timeoutId = setTimeout(goNext, duration);
+    }
+  }
+
+  function goNext() {
+    const nextIndex = (currentIndex + 1) % INTRO_MEDIA.length;
+    showSlide(nextIndex);
+  }
+
+  function stop() {
+    clearTimeout(timeoutId);
+    slides.forEach(function(slide) {
+      const video = slide.querySelector('video');
+      if (video) video.pause();
+    });
+  }
+
+  // 초기 슬라이드 표시
+  showSlide(0);
+
+  return { stop: stop };
+}
+
+// 인트로 통과 로직 — 클릭, 키, CTA 버튼 모두 동일 동작
+function initIntro() {
+  const intro = document.getElementById('intro');
+  const introCta = document.getElementById('introCta');
+  let dismissed = false;
+  let mediaController = null;
+
+  // URL 해시가 있으면 인트로 건너뛰기 (북마크/공유 링크 대응)
+  if (window.location.hash && window.location.hash !== '#intro') {
+    intro.classList.add('is-hidden');
+    document.body.classList.remove('is-intro-active');
+    dismissed = true;
+    return;
+  }
+
+  // 미디어 슬라이더 시작
+  mediaController = initIntroMediaSlider();
+
+  // 인트로 닫기 — 페이드 아웃 + 미디어 정지 + 본문 스크롤 해제
+  function dismissIntro() {
+    if (dismissed) return;
+    dismissed = true;
+    intro.classList.add('is-exiting');
+    if (mediaController) mediaController.stop();
+    // 본문 스크롤 락 해제
+    document.body.classList.remove('is-intro-active');
+    // 애니메이션 종료 후 완전히 숨김
+    setTimeout(function() {
+      intro.classList.add('is-hidden');
+    }, 600);
+  }
+
+  // CTA 버튼 클릭 — 통과 (인트로 자체 클릭과 중복 방지)
+  introCta.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dismissIntro();
+  });
+
+  // 인트로 영역 클릭 — 통과
+  intro.addEventListener('click', dismissIntro);
+
+  // 키 입력 — 스페이스, 엔터로 통과
+  document.addEventListener('keydown', function(e) {
+    if (dismissed) return;
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      dismissIntro();
+    }
+  });
+}
+
+// ============================================================
+// 페이지 초기화 — 모든 주입과 핸들러 바인딩
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  injectImages();
+  bindPageLinks();
+  bindHashRouter();
+  initModal();
+  initIntro();
+
+  // 초기 페이지 결정 — URL 해시가 있으면 해당 페이지, 없으면 intro
+  const initialPage = window.location.hash.replace('#', '') || 'intro';
+  showPage(initialPage);
+});
+</script>
+
+</body>
+</html>
