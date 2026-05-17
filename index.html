@@ -64,8 +64,9 @@
   --cyan-ring: 0 0 0 1px #66c0f4, 0 0 16px rgba(102, 192, 244, 0.35);
   --cyan-inset: inset 0 0 0 2px #66c0f4;
 
-  /* 외부 리소스 베이스 URL — GitHub Pages 호스팅용 */
-  --media-base-images: "https://koioas1.github.io/syj_portfolio/images/";
+  /* 외부 리소스 베이스 URL — GitHub Pages 호스팅용 (이미지 / 움짤 / 문서 3종 분리) */
+  --media-base-images: "https://koioas1.github.io/syj_portfolio/img/";
+  --media-base-gif: "https://koioas1.github.io/syj_portfolio/gif/";
   --media-base-pdf: "https://koioas1.github.io/syj_portfolio/pdf/";
 
   /* 폰트 스택 — 모티바 산스 + 한글 폴백 */
@@ -1686,7 +1687,7 @@ img {
     <div class="intro__version">v2026.02.10</div>
 
     <div class="intro__center">
-      <div class="intro__eyebrow">Balance &amp; System Designer</div>
+      <div class="intro__eyebrow">시스템 기획자</div>
       <h1 class="intro__headline">
         <span class="intro__headline-accent">서윤준</span>의 게임 기획 포트폴리오
       </h1>
@@ -1763,11 +1764,11 @@ img {
         <h2 class="section-header__title">프로젝트</h2>
       </div>
       <!-- 프로젝트 카드 미디어 — 각 프로젝트 페이지 첫 슬라이드와 동일한 GIF가 재생됨
-           현재는 임시 placeholder URL을 사용. 실제 GIF 파일로 교체 시 data-img-direct만 수정 -->
+           파일 교체 시 data-gif-src 어트리뷰트의 파일명만 수정 (MEDIA_BASE.gif 기준 상대 경로) -->
       <div class="project-link-grid">
         <button class="project-link-card" data-page-link="donutcrash">
           <div class="project-link-card__media">
-            <img data-img-direct="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif" alt="">
+            <img data-gif-src="DC_info_title.gif" alt="">
           </div>
           <div class="project-link-card__caption">
             <div class="project-link-card__title">Donut Crash</div>
@@ -1776,7 +1777,7 @@ img {
         </button>
         <button class="project-link-card" data-page-link="ptd">
           <div class="project-link-card__media">
-            <img data-img-direct="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif" alt="">
+            <img data-gif-src="PTD_info_title.gif" alt="">
           </div>
           <div class="project-link-card__caption">
             <div class="project-link-card__title">PathTowerDefence</div>
@@ -1785,7 +1786,7 @@ img {
         </button>
         <button class="project-link-card" data-page-link="mouse">
           <div class="project-link-card__media">
-            <img data-img-direct="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif" alt="">
+            <img data-gif-src="MOUSE_info_title.gif" alt="">
           </div>
           <div class="project-link-card__caption">
             <div class="project-link-card__title">생쥐 대탈출</div>
@@ -2021,7 +2022,7 @@ img {
 
   <section class="hero-band">
     <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
-    <div class="hero-band__bg" data-bg-img="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif"></div>
+    <div class="hero-band__bg" data-bg-gif="열리면 안되는 파일.gif"></div>
     <div class="hero-band__mask"></div>
     <div class="hero-band__inner">
       <h1 class="hero-band__title">Donut Crash</h1>
@@ -2075,8 +2076,8 @@ img {
             <span class="info-sidebar__meta-value">턴제 액션 / 물리 충돌</span>
             <span class="info-sidebar__meta-label">담당:</span>
             <span class="info-sidebar__meta-value">시스템 · 밸런스 기획</span>
-            <span class="info-sidebar__meta-label">기획 기간:</span>
-            <span class="info-sidebar__meta-value">2025.06 ~ 2025.11</span>
+            <span class="info-sidebar__meta-label">개발 기간:</span>
+            <span class="info-sidebar__meta-value">2025.09 ~ 2025.12</span>
             <span class="info-sidebar__meta-label">툴:</span>
             <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
             <span class="info-sidebar__meta-label">엔진:</span>
@@ -2217,8 +2218,8 @@ img {
 <main class="page" data-page="ptd">
 
   <section class="hero-band">
-    <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
-    <div class="hero-band__bg" data-bg-img="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif"></div>
+    <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 전체합성gif여기에	-->
+    <div class="hero-band__bg" data-bg-img=""></div>
     <div class="hero-band__mask"></div>
     <div class="hero-band__inner">
       <h1 class="hero-band__title">PathTowerDefence</h1>
@@ -2254,7 +2255,7 @@ img {
 
         <aside class="info-sidebar">
           <div class="info-sidebar__title-art">
-            <img data-img-src="ptd/title-art.png" alt="PathTowerDefence 타이틀 아트">
+            <img data-img-src="PTD_title_img.png" alt="PathTowerDefence 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
             <span class="kw">타워로 경로를 직접 설계</span>하는 차세대 TD.
@@ -2265,10 +2266,10 @@ img {
             <span class="info-sidebar__meta-value">타워디펜스 / 전략 시뮬레이션</span>
             <span class="info-sidebar__meta-label">담당:</span>
             <span class="info-sidebar__meta-value">시스템 설계 · 밸런스 기획</span>
-            <span class="info-sidebar__meta-label">기획 기간:</span>
-            <span class="info-sidebar__meta-value">2025.01 ~ 2025.05</span>
+            <span class="info-sidebar__meta-label">개발 기간:</span>
+            <span class="info-sidebar__meta-value">2025.07 ~ 2025.09</span>
             <span class="info-sidebar__meta-label">툴:</span>
-            <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
+            <span class="info-sidebar__meta-value">Excel, Notion</span>
             <span class="info-sidebar__meta-label">엔진:</span>
             <span class="info-sidebar__meta-value">GameMaker Studio 2</span>
           </div>
@@ -2397,7 +2398,7 @@ img {
 
   <section class="hero-band">
     <!-- 배경 타이틀 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
-    <div class="hero-band__bg" data-bg-img="https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면 안되는 파일.gif"></div>
+    <div class="hero-band__bg" data-bg-img=""></div>
     <div class="hero-band__mask"></div>
     <div class="hero-band__inner">
       <h1 class="hero-band__title">생쥐 대탈출</h1>
@@ -2444,7 +2445,7 @@ img {
             <span class="info-sidebar__meta-value">방치형 / 캐주얼</span>
             <span class="info-sidebar__meta-label">담당:</span>
             <span class="info-sidebar__meta-value">재화 경제 구조 설계</span>
-            <span class="info-sidebar__meta-label">기획 기간:</span>
+            <span class="info-sidebar__meta-label">개발 기간:</span>
             <span class="info-sidebar__meta-value">2025.07 ~ 2025.10</span>
             <span class="info-sidebar__meta-label">툴:</span>
             <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
@@ -2587,20 +2588,22 @@ img {
 // 외부 리소스 베이스 URL 미러 — CSS 변수와 동일한 값
 // ============================================================
 const MEDIA_BASE = {
-  images: 'https://koioas1.github.io/syj_portfolio/images/',
+  images: 'https://koioas1.github.io/syj_portfolio/img/',
+  gif: 'https://koioas1.github.io/syj_portfolio/gif/',
   pdf: 'https://koioas1.github.io/syj_portfolio/pdf/'
 };
 
 // ============================================================
 // PRESS START 인트로 후방 미디어 슬라이더 데이터
 // type: 'video' (MP4) 또는 'image' (GIF/PNG/JPG)
-// src: MEDIA_BASE.images 기준 상대 경로
+// base: 'images' (정적 이미지/비디오) 또는 'gif' (움짤 전용)
+// src: 해당 base 기준 상대 경로
 // duration: 이미지 표시 시간(ms). 비디오는 ended 이벤트로 자동 전환
 // ============================================================
 const INTRO_MEDIA = [
-  { type: 'image', src: "https://koioas1.github.io/SeoYoonJun_Portfolio/img/열리면안되는파일.gif", duration: 6000 },
-  { type: 'video', src: 'intro-bg/mouse-gameplay.mp4' },
-  { type: 'image', src: 'intro-bg/simulation-data.gif', duration: 6000 }
+  { type: 'image', base: 'images', src: "", duration: 6000 },
+  { type: 'video', base: 'images', src: 'intro-bg/mouse-gameplay.mp4' },
+  { type: 'image', base: 'gif', src: 'simulation-data.gif', duration: 6000 }
 ];
 
 // 이미지 기본 표시 시간 (지정 안된 경우)
@@ -2632,26 +2635,38 @@ const VALID_PAGES = ['intro', 'donutcrash', 'ptd', 'mouse'];
 
 // ============================================================
 // 외부 이미지 일괄 주입
-// 세 가지 패턴 지원:
+// 다섯 가지 패턴 지원:
 // (1) data-img-src: MEDIA_BASE.images 기준 상대 경로 → src
-// (2) data-img-direct: 절대 URL 직접 사용 → src (외부 도메인 이미지)
-// (3) data-bg-img: 절대 URL → background-image (히어로 배경 등)
+// (2) data-gif-src: MEDIA_BASE.gif 기준 상대 경로 → src (움짤 전용)
+// (3) data-img-direct: 절대 URL 직접 사용 → src (외부 도메인 이미지)
+// (4) data-bg-img: 절대 URL → background-image (히어로 배경 등)
+// (5) data-bg-gif: MEDIA_BASE.gif 기준 상대 경로 → background-image
 // ============================================================
 function injectImages() {
-  // (1) 기본 베이스 URL 기준 상대 경로
+  // (1) 이미지 베이스 URL 기준 상대 경로 — png/jpg 등 정적 이미지
   document.querySelectorAll('[data-img-src]').forEach(function(el) {
     const relativePath = el.getAttribute('data-img-src');
     el.src = MEDIA_BASE.images + relativePath;
   });
-  // (2) 절대 URL을 src에 직접 주입 — 외부 도메인 이미지/GIF
+  // (2) 움짤 베이스 URL 기준 상대 경로 — gif 전용
+  document.querySelectorAll('[data-gif-src]').forEach(function(el) {
+    const relativePath = el.getAttribute('data-gif-src');
+    el.src = MEDIA_BASE.gif + relativePath;
+  });
+  // (3) 절대 URL을 src에 직접 주입 — 외부 도메인 이미지
   document.querySelectorAll('[data-img-direct]').forEach(function(el) {
     const directUrl = el.getAttribute('data-img-direct');
     el.src = directUrl;
   });
-  // (3) 절대 URL을 background-image로 주입 — 히어로 배경 레이어
+  // (4) 절대 URL을 background-image로 주입 — 히어로 배경 레이어 등
   document.querySelectorAll('[data-bg-img]').forEach(function(el) {
     const directUrl = el.getAttribute('data-bg-img');
     el.style.backgroundImage = 'url("' + directUrl + '")';
+  });
+  // (5) 움짤 베이스 URL 기준 상대 경로를 background-image로 주입
+  document.querySelectorAll('[data-bg-gif]').forEach(function(el) {
+    const relativePath = el.getAttribute('data-bg-gif');
+    el.style.backgroundImage = 'url("' + MEDIA_BASE.gif + encodeURI(relativePath) + '")';
   });
 }
 
@@ -2862,18 +2877,21 @@ function initIntroMediaSlider() {
     slide.className = 'intro__media';
     slide.setAttribute('data-media-index', i);
 
+    // 항목의 base 필드를 사용해 베이스 URL 선택 (gif는 움짤 베이스, 그 외는 이미지 베이스)
+    const baseUrl = MEDIA_BASE[item.base] || MEDIA_BASE.images;
+
     let mediaEl;
     if (item.type === 'video') {
       // MP4 비디오 — 음소거, 자동재생, 인라인
       mediaEl = document.createElement('video');
-      mediaEl.src = MEDIA_BASE.images + item.src;
+      mediaEl.src = baseUrl + item.src;
       mediaEl.muted = true;
       mediaEl.playsInline = true;
       mediaEl.preload = 'auto';
     } else {
       // GIF/이미지
       mediaEl = document.createElement('img');
-      mediaEl.src = MEDIA_BASE.images + item.src;
+      mediaEl.src = baseUrl + item.src;
       mediaEl.alt = '';
     }
 
