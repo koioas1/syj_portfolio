@@ -1467,19 +1467,157 @@ img {
   background-color: var(--surface-page);
 }
 
-/* 외부 리소스 모달 — PDF iframe 대신 링크 리스트 */
+/* ============================================================
+   외부 리소스 모달 — 아코디언 패널 구조
+   ------------------------------------------------------------
+   · 버튼은 항상 모달에 표시되고, 활성 항목의 iframe 패널만 펼쳐진다.
+   · Notion 버튼이 활성화되면 Figma 버튼이 아래로 미끄러져 내려가고
+     그 사이 공간(iframe 영역)에 외부 페이지가 로드된다.
+   · Figma 버튼이 활성화되면 버튼 아래의 iframe 영역이 펼쳐진다.
+   · 활성 상태 전환은 .is-active 클래스 + max-height 트랜지션으로 제어.
+   ============================================================ */
+
+/* 외부 링크 모달 컨테이너 — 세로 흐름, 패널 본문 전체 높이를 채움 */
 .modal-overlay__links {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  padding: var(--space-md) 0;
+  gap: var(--space-sm);
+  height: 100%;
+  padding: var(--space-xs) 0;
 }
 
+/* 아코디언 한 항목 — 버튼 + iframe 패널의 묶음 */
+.modal-overlay__link-item {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* 활성 항목은 남은 공간을 모두 차지(iframe이 자연스럽게 확장) */
+.modal-overlay__link-item.is-active {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 외부 링크 버튼 — Notion / Figma 트리거 */
 .modal-overlay__link {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
   color: var(--accent-cyan);
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--surface-hairline);
+  background-color: var(--surface-purchase);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--bevel);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-overlay__link:hover {
+  background-color: var(--surface-card-hover);
+  color: var(--accent-cyan-bright);
+}
+
+/* 활성 버튼 — 표면 한 단계 더 밝게, 텍스트 강조 */
+.modal-overlay__link.is-active {
+  background-color: var(--surface-card-hover);
+  color: var(--accent-cyan-bright);
+}
+
+/* 토글 아이콘 — 활성 시 회전 */
+.modal-overlay__link-icon {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay__link.is-active .modal-overlay__link-icon {
+  transform: rotate(90deg);
+}
+
+/* 아코디언 패널 — 닫혔을 때 0, 열렸을 때 남은 공간을 채움 */
+.modal-overlay__link-panel {
+  flex: 0 1 0;
+  max-height: 0;
+  min-height: 0;
+  overflow: hidden;
+  margin-top: 0;
+  transition: max-height 0.35s ease, margin-top 0.35s ease;
+}
+
+/* 활성 패널 — 부모 항목이 .is-active일 때만 펼쳐짐 */
+.modal-overlay__link-item.is-active .modal-overlay__link-panel {
+  flex: 1 1 auto;
+  max-height: 100%;
+  margin-top: var(--space-sm);
+}
+
+/* iframe — 외부 링크(Notion / Figma) 임베드 */
+.modal-overlay__link-iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: none;
+  background-color: var(--surface-page);
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+/* ============================================================
+   탭 행 — 하위 문서가 여러 개인 버튼(Notion·PPT) 전용
+   ------------------------------------------------------------
+   · 상위 버튼 펼침과 동시에 탭 + iframe 영역이 한 번에 노출.
+   · 탭 클릭 시 iframe.src만 교체 — DOM 재생성 없이 빠른 전환.
+   · 단일 항목 버튼(Figma 1개)은 탭 없이 iframe만 표시.
+   ============================================================ */
+.modal-overlay__link-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+  margin-bottom: var(--space-xs);
+}
+
+/* 탭 버튼 — 비활성 상태 */
+.modal-overlay__link-tab {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background-color: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-overlay__link-tab:hover {
+  color: var(--accent-cyan);
+}
+
+/* 활성 탭 — 태그 핀과 동일한 시안 톤 배경 */
+.modal-overlay__link-tab.is-active {
+  background-color: var(--tag-bg);
+  color: var(--text-tag);
+}
+
+/* 탭이 있을 때의 iframe 래퍼 — 탭 행 아래 남은 공간을 채움 */
+.modal-overlay__link-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.modal-overlay__link-frame .modal-overlay__link-iframe {
+  height: 100%;
 }
 
 /* ============================================================
@@ -2612,21 +2750,63 @@ const DEFAULT_IMAGE_DURATION = 6000;
 // ============================================================
 // 프로젝트별 외부 링크 데이터 — '자료 모두 보기' 모달에서 사용
 // ============================================================
+// 각 버튼은 label과 items 배열을 가지며, items가 여러 개면 탭으로 전환,
+// 하나면 곧바로 iframe만 표시한다.
+// item.urlType이 'pdf'면 MEDIA_BASE.pdf를 기준으로 한 파일명, 'external'이면 절대 URL.
 const EXTERNAL_LINKS = {
   donutcrash: [
-    { label: 'GitHub 저장소', url: 'https://github.com/koioas1' },
-    { label: 'Notion 기획 문서', url: 'https://www.notion.so/' },
-    { label: 'Figma 프로토타입', url: 'https://www.figma.com/' }
+    {
+      type: 'notion',
+      label: 'Notion 기획 문서',
+      items: [
+        { label: '전투 시스템 기획서',  urlType: 'pdf', url: 'DonutCrash전투_시스템_기획서.pdf' },
+        { label: 'UI 기획서',           urlType: 'pdf', url: 'DonutCrash인게임_ui_기획서.pdf' },
+        { label: '스킬 시스템 기획서',  urlType: 'pdf', url: 'DonutCrash스킬_시스템_기획서.pdf' },
+        { label: '전투 데미지 계산식',  urlType: 'pdf', url: 'DonutCrash전투_데미지_계산식.pdf' }
+      ]
+    },
+    {
+      type: 'ppt',
+      label: 'PPT 문서',
+      items: [
+        { label: '컨셉 기획서',         urlType: 'pdf', url: '도넛대격돌_컨셉_기획서.pdf' },
+        { label: '팀 비빔밥 최종보고서', urlType: 'pdf', url: '팀_비빔밥_최종보고서.pdf' }
+      ]
+    },
+    {
+      type: 'figma',
+      label: 'Figma 프로토타입',
+      items: [
+        { label: 'DonutCrash 프로토타입', urlType: 'external', url: 'https://embed.figma.com/proto/bt9KgBCiWvIaU2Dclmkvrj/%EC%A0%9C%EB%AA%A9-%EC%97%86%EC%9D%8C?node-id=653-15252&viewport=-19810%2C17527%2C0.91&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=653%3A14072&show-proto-sidebar=1&page-id=0%3A1&embed-host=share' }
+      ]
+    }
   ],
   ptd: [
-    { label: 'GitHub 저장소', url: 'https://github.com/koioas1' },
-    { label: 'Notion 기획 문서', url: 'https://www.notion.so/' },
-    { label: 'Figma 프로토타입', url: 'https://www.figma.com/' }
+    {
+      type: 'ppt',
+      label: 'PPT 문서',
+      items: [
+        { label: '컨셉 기획서',  urlType: 'pdf', url: 'PTD_컨셉_기획서.pdf' },
+        { label: '개발 보고서',  urlType: 'pdf', url: 'PTD_개발_보고서.pdf' }
+      ]
+    }
   ],
   mouse: [
-    { label: 'GitHub 저장소', url: 'https://github.com/koioas1' },
-    { label: 'Notion 기획 문서', url: 'https://www.notion.so/' },
-    { label: 'Figma 프로토타입', url: 'https://www.figma.com/' }
+    {
+      type: 'notion',
+      label: 'Notion 기획 문서',
+      items: [
+        { label: '기본 플레이 기획서', urlType: 'pdf', url: '생쥐대탈출_컨셉_기획서.pdf' },
+        { label: 'UI 시스템 기획서',   urlType: 'pdf', url: '생쥐대탈출_UI_기획서.pdf' }
+      ]
+    },
+    {
+      type: 'figma',
+      label: 'Figma 프로토타입',
+      items: [
+        { label: '생쥐 대탈출 프로토타입', urlType: 'external', url: 'https://embed.figma.com/proto/bt9KgBCiWvIaU2Dclmkvrj/%EC%A0%9C%EB%AA%A9-%EC%97%86%EC%9D%8C?node-id=588-10143&viewport=-19810%2C17527%2C0.91&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=588%3A10143&show-proto-sidebar=1&page-id=0%3A1&embed-host=share' }
+      ]
+    }
   ]
 };
 
@@ -2812,15 +2992,105 @@ function initModal() {
   }
 
   // 외부 링크 모달 열기 — 프로젝트별 EXTERNAL_LINKS 데이터 사용
+  // 버튼 클릭 시 같은 항목의 패널이 펼쳐지며 외부 페이지/PDF를 로드한다.
+  // 하위 문서가 여러 개인 경우 탭 행을 통해 같은 iframe의 src만 교체한다.
   function openLinksModal(projectKey) {
-    const links = EXTERNAL_LINKS[projectKey] || [];
+    const buttons = EXTERNAL_LINKS[projectKey] || [];
     modalTitle.textContent = '관련 자료 모두 보기';
+
+    // 버튼 + 빈 패널(아코디언) 골격 생성 — 실제 탭 / iframe은 펼칠 때 동적 삽입
     let html = '<div class="modal-overlay__links">';
-    links.forEach(function(link) {
-      html += '<a class="modal-overlay__link" href="' + link.url + '" target="_blank" rel="noopener">' + link.label + ' →</a>';
+    buttons.forEach(function(btn, idx) {
+      html += '<div class="modal-overlay__link-item" data-link-index="' + idx + '">';
+      html +=   '<button type="button" class="modal-overlay__link">';
+      html +=     '<span class="modal-overlay__link-label">' + btn.label + '</span>';
+      html +=     '<span class="modal-overlay__link-icon" aria-hidden="true">▸</span>';
+      html +=   '</button>';
+      html +=   '<div class="modal-overlay__link-panel"></div>';
+      html += '</div>';
     });
     html += '</div>';
     modalBody.innerHTML = html;
+
+    // url 타입별 실제 src 문자열 빌드 — pdf는 베이스 URL 합성, external은 그대로
+    function buildSrc(item) {
+      if (item.urlType === 'pdf') {
+        return MEDIA_BASE.pdf + item.url;
+      }
+      return item.url;
+    }
+
+    // 펼침 시 패널 내부 마크업 생성 — 단일 항목은 iframe만, 다중 항목은 탭 + iframe
+    function renderPanel(panel, buttonData) {
+      const items = buttonData.items || [];
+      if (items.length === 0) {
+        panel.innerHTML = '';
+        return;
+      }
+      // 단일 항목 — 탭 없이 iframe만
+      if (items.length === 1) {
+        const src = buildSrc(items[0]);
+        panel.innerHTML = '<iframe class="modal-overlay__link-iframe" src="' + src + '" title="' + items[0].label + '" loading="lazy" allowfullscreen></iframe>';
+        return;
+      }
+      // 다중 항목 — 탭 행 + iframe 영역
+      let inner = '<div class="modal-overlay__link-tabs">';
+      items.forEach(function(item, i) {
+        const activeClass = (i === 0) ? ' is-active' : '';
+        inner += '<button type="button" class="modal-overlay__link-tab' + activeClass + '" data-tab-index="' + i + '">' + item.label + '</button>';
+      });
+      inner += '</div>';
+      inner += '<div class="modal-overlay__link-frame">';
+      inner +=   '<iframe class="modal-overlay__link-iframe" src="' + buildSrc(items[0]) + '" title="' + items[0].label + '" loading="lazy" allowfullscreen></iframe>';
+      inner += '</div>';
+      panel.innerHTML = inner;
+
+      // 탭 클릭 — iframe.src만 교체, DOM 재생성 없음
+      const iframe = panel.querySelector('.modal-overlay__link-iframe');
+      panel.querySelectorAll('.modal-overlay__link-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          const tabIdx = parseInt(tab.getAttribute('data-tab-index'), 10);
+          const item = items[tabIdx];
+          if (!item || !iframe) return;
+          panel.querySelectorAll('.modal-overlay__link-tab').forEach(function(t) {
+            t.classList.remove('is-active');
+          });
+          tab.classList.add('is-active');
+          iframe.src = buildSrc(item);
+          iframe.title = item.label;
+        });
+      });
+    }
+
+    // 상위 버튼 클릭 → 아코디언 토글
+    const itemEls = modalBody.querySelectorAll('.modal-overlay__link-item');
+    itemEls.forEach(function(itemEl, idx) {
+      const btn = itemEl.querySelector('.modal-overlay__link');
+      const panel = itemEl.querySelector('.modal-overlay__link-panel');
+      btn.addEventListener('click', function() {
+        const isActive = itemEl.classList.contains('is-active');
+        // 다른 항목 모두 닫기 — iframe HTML 클리어로 외부 페이지 로딩 중단
+        itemEls.forEach(function(other) {
+          if (other !== itemEl) {
+            other.classList.remove('is-active');
+            const otherBtn = other.querySelector('.modal-overlay__link');
+            const otherPanel = other.querySelector('.modal-overlay__link-panel');
+            if (otherBtn) otherBtn.classList.remove('is-active');
+            if (otherPanel) otherPanel.innerHTML = '';
+          }
+        });
+        if (isActive) {
+          itemEl.classList.remove('is-active');
+          btn.classList.remove('is-active');
+          panel.innerHTML = '';
+        } else {
+          itemEl.classList.add('is-active');
+          btn.classList.add('is-active');
+          renderPanel(panel, buttons[idx]);
+        }
+      });
+    });
+
     modal.classList.add('is-open');
     document.body.classList.add('is-modal-open');
   }
