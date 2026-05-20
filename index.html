@@ -64,9 +64,10 @@
   --cyan-ring: 0 0 0 1px #66c0f4, 0 0 16px rgba(102, 192, 244, 0.35);
   --cyan-inset: inset 0 0 0 2px #66c0f4;
 
-  /* 외부 리소스 베이스 URL — GitHub Pages 호스팅용 (이미지 / 움짤 / 문서 3종 분리) */
+  /* 외부 리소스 베이스 URL — GitHub Pages 호스팅용 (이미지 / 움짤 / 동영상 / 문서 4종 분리) */
   --media-base-images: "https://koioas1.github.io/syj_portfolio/img/";
   --media-base-gif: "https://koioas1.github.io/syj_portfolio/gif/";
+  --media-base-video: "https://koioas1.github.io/syj_portfolio/video/";
   --media-base-pdf: "https://koioas1.github.io/syj_portfolio/pdf/";
 
   /* 폰트 스택 — 모티바 산스 + 한글 폴백 */
@@ -999,7 +1000,9 @@ img {
 .media-slider__slide video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* cover가 아니라 contain — 원본 비율을 유지한 채 미디어 전체가 프레임 안에 들어가도록.
+     16:9가 아닌 이미지/영상은 좌우 또는 위아래에 검은 여백(프레임 배경색)이 생긴다. */
+  object-fit: contain;
 }
 
 /* 슬라이드 캡션 — 하단 검은 띠 */
@@ -1015,15 +1018,40 @@ img {
   color: var(--text-muted);
 }
 
-/* 썸네일 스트립 — 균등 분할 */
+/* 썸네일 스트립 — 4개 기준 고정 너비, 초과 시 가로 스크롤 */
 .media-slider__thumbs {
   display: flex;
   gap: var(--space-xs);
   margin-top: var(--space-xs);
+  /* 4개를 넘으면 칸을 줄이지 않고 옆으로 넘쳐 가로 스크롤(스크롤바 / 마우스휠로 이동) */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  /* 스크롤바 — 얇고 어둡게(스팀 분위기 유지) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-card-hover) transparent;
+}
+
+/* 웹킷 계열 스크롤바 — 막대 + 호버 시 시안 톤. 높이 8px(기존 6px에서 약 30% 확대) */
+.media-slider__thumbs::-webkit-scrollbar {
+  height: 8px;
+}
+.media-slider__thumbs::-webkit-scrollbar-track {
+  background: transparent;
+}
+.media-slider__thumbs::-webkit-scrollbar-thumb {
+  background: var(--surface-card-hover);
+  border-radius: var(--radius-xs);
+}
+.media-slider__thumbs::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
 }
 
 .media-slider__thumb {
-  flex: 1;
+  /* flex:1(개수만큼 무한 축소) 대신 4개 기준 고정 너비.
+     4개 이하: 한 줄에 꽉 참 / 5개 이상: 칸 크기 유지한 채 넘쳐서 가로 스크롤.
+     calc — 전체 너비에서 썸네일 사이 갭 3개를 빼고 4등분 */
+  flex: 0 0 calc((100% - 3 * var(--space-xs)) / 4);
   aspect-ratio: 16 / 9;
   background-color: var(--surface-card);
   overflow: hidden;
@@ -1037,7 +1065,9 @@ img {
 .media-slider__thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* cover가 아니라 contain — 썸네일 이미지도 비율 유지한 채 틀 안에 전체가 들어가도록.
+     16:9가 아닌 이미지는 좌우 또는 위아래에 여백이 생긴다. */
+  object-fit: contain;
   opacity: 0.6;
   transition: opacity 0.2s ease;
 }
@@ -2208,8 +2238,9 @@ img {
       <div class="hero-band__pair">
         <div class="media-slider" data-slider>
           <div class="media-slider__frame">
+            <!-- 첫 번째 슬라이드 — 동영상 (MEDIA_BASE.video 경로의 mp4) -->
             <div class="media-slider__slide media-slider__slide--active" data-slide="0">
-              <img data-img-src="donutcrash/slide-1.png" alt="Donut Crash 게임플레이 1">
+              <video data-video-src="donutcrash.mp4" muted playsinline preload="metadata" aria-label="Donut Crash 게임플레이 영상"></video>
               <div class="media-slider__caption">턴제 물리 충돌 전투 — 5개의 도넛 덱으로 진행</div>
             </div>
             <div class="media-slider__slide" data-slide="1">
@@ -2246,14 +2277,16 @@ img {
             <img data-img-src="dc_title_img.png" alt="Donut Crash 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
-            5개의 도넛 덱을 활용한 <span class="kw">턴제 물리 충돌 전투</span> 게임.
-            5가지 고유 스탯의 상성 관계와 티어 성장 곡선을 설계했습니다.
+            5개의 도넛 덱을 활용한 <span class="kw">턴제 물리 충돌 전투</span> 게임.<br>
+            각각 도넛들의 고유 스탯의 상성 관계와<br>티어 성장 곡선을 설계했습니다.<br><br><br><br><br><br>
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
             <span class="info-sidebar__meta-value">턴제 액션 / 물리 충돌</span>
+			<span class="info-sidebar__meta-label">개발 인원:</span>
+            <span class="info-sidebar__meta-value">개발 6 / 기획 4</span>
             <span class="info-sidebar__meta-label">담당:</span>
-            <span class="info-sidebar__meta-value">시스템 · 밸런스 기획</span>
+            <span class="info-sidebar__meta-value">인게임 시스템 · 밸런스 기획, QA</span>
             <span class="info-sidebar__meta-label">개발 기간:</span>
             <span class="info-sidebar__meta-value">2025.09 ~ 2025.12</span>
             <span class="info-sidebar__meta-label">툴:</span>
@@ -2278,7 +2311,7 @@ img {
       <div class="purchase-box">
         <div class="purchase-box__heading">Donut Crash — 플레이 가능한 빌드</div>
         <div class="purchase-box__actions">
-          <button class="cta-button-secondary" data-open-links data-links-key="donutcrash">자료 모두 보기 →</button>
+          <button class="cta-button-secondary" data-open-links data-links-key="donutcrash">-자료 모아 보기-</button>
           <a class="cta-button-primary" href="https://example.com/donutcrash-download" target="_blank" rel="noopener">게임 다운로드</a>
         </div>
       </div>
@@ -2405,29 +2438,47 @@ img {
       <div class="hero-band__pair">
         <div class="media-slider" data-slider>
           <div class="media-slider__frame">
+            <!-- 첫 번째 슬라이드 — 동영상 (MEDIA_BASE.video 경로의 mp4) -->
             <div class="media-slider__slide media-slider__slide--active" data-slide="0">
-              <img data-img-src="ptd/slide-1.png" alt="PTD 게임플레이 1">
-              <div class="media-slider__caption">웨이브 방어 — 무작위 경로 설계</div>
+              <video data-video-src="PTD_타이틀영상.mp4" muted playsinline preload="metadata" aria-label="PathTowerDefence 게임플레이 영상"></video>
+              <div class="media-slider__caption">게임플레이</div>
             </div>
             <div class="media-slider__slide" data-slide="1">
-              <img data-img-src="ptd/slide-2.png" alt="PTD 게임플레이 2">
-              <div class="media-slider__caption">4종족 시너지 조합 시스템</div>
+              <img data-img-src="PTD_2nd_img.jpg" alt="PTD 게임플레이 2">
+              <div class="media-slider__caption">경로보기</div>
             </div>
             <div class="media-slider__slide" data-slide="2">
-              <img data-img-src="ptd/slide-3.png" alt="PTD 게임플레이 3">
-              <div class="media-slider__caption">웨이브 밸런싱 시뮬레이션</div>
+              <img data-img-src="PTD_1st_img.jpg" alt="PTD 게임플레이 3">
+              <div class="media-slider__caption">경로이동</div>
+            </div>
+            <div class="media-slider__slide" data-slide="1">
+              <img data-img-src="PTD_3rd_img.jpg" alt="PTD 게임플레이 4">
+              <div class="media-slider__caption">타워조합</div>
+            </div>
+            <div class="media-slider__slide" data-slide="2">
+              <img data-img-src="PTD_4th_img.jpg" alt="PTD 게임플레이 5">
+              <div class="media-slider__caption">타워조합</div>
             </div>
           </div>
           <div class="media-slider__thumbs">
+            <!-- 0번 슬라이드는 동영상이라 썸네일로 쓸 이미지가 없음.
+                 영상 첫 프레임을 캡처한 이미지를 업로드하고 그 파일명을 아래 data-img-src에 넣으면 표시된다.
+                 (예: data-img-src="PTD_title_thumb.jpg") -->
             <button class="media-slider__thumb media-slider__thumb--active" data-thumb="0" aria-label="슬라이드 1">
-              <img data-img-src="ptd/thumb-1.png" alt="">
+              <img data-img-src="PTD_타이틀영상.jpg" alt="">
             </button>
             <button class="media-slider__thumb" data-thumb="1" aria-label="슬라이드 2">
-              <img data-img-src="ptd/thumb-2.png" alt="">
+              <img data-img-src="PTD_2nd_img.jpg" alt="">
             </button>
             <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 3">
-              <img data-img-src="ptd/thumb-3.png" alt="">
+              <img data-img-src="PTD_1st_img.jpg" alt="">
             </button>
+            <button class="media-slider__thumb" data-thumb="3" aria-label="슬라이드 4">
+              <img data-img-src="PTD_3rd_img.jpg" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="4" aria-label="슬라이드 5">
+              <img data-img-src="PTD_4th_img.jpg" alt="">
+            </button>			
           </div>
         </div>
 
@@ -2436,14 +2487,17 @@ img {
             <img data-img-src="PTD_title_img.png" alt="PathTowerDefence 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
-            <span class="kw">타워로 경로를 직접 설계</span>하는 차세대 TD.
-            4종족 시너지와 무작위 상점 시스템으로 매판 다른 전략 설계를 유도합니다.
+            <span class="kw">타워로 경로를 직접 설계</span>하는 차세대 TD.<br>
+            4종족 고유한 특성과 무작위 상점 시스템, 적들의 경로로<br>
+			매판 다른 전략 설계를 유도합니다.<br><br><br><br><br><br>
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
             <span class="info-sidebar__meta-value">타워디펜스 / 전략 시뮬레이션</span>
+			<span class="info-sidebar__meta-label">개발 인원:</span>
+            <span class="info-sidebar__meta-value">1인 개발</span>
             <span class="info-sidebar__meta-label">담당:</span>
-            <span class="info-sidebar__meta-value">시스템 설계 · 밸런스 기획</span>
+            <span class="info-sidebar__meta-value">시스템 설계 · 개발</span>
             <span class="info-sidebar__meta-label">개발 기간:</span>
             <span class="info-sidebar__meta-value">2025.07 ~ 2025.09</span>
             <span class="info-sidebar__meta-label">툴:</span>
@@ -2468,7 +2522,7 @@ img {
       <div class="purchase-box">
         <div class="purchase-box__heading">PathTowerDefence — 플레이 가능한 빌드</div>
         <div class="purchase-box__actions">
-          <button class="cta-button-secondary" data-open-links data-links-key="ptd">자료 모두 보기 →</button>
+          <button class="cta-button-secondary" data-open-links data-links-key="ptd">-자료 모아 보기-</button>
           <a class="cta-button-primary" href="https://example.com/ptd-download" target="_blank" rel="noopener">게임 다운로드</a>
         </div>
       </div>
@@ -2615,16 +2669,18 @@ img {
             <img data-img-src="Mouse_title_img.png" alt="생쥐 대탈출 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
-            터치 한 번으로 재화를 모으는 <span class="kw">방치형 캐주얼 게임</span>.
-            성장 곡선과 재화 인플레이션 관리에 초점을 둔 경제 구조를 설계했습니다.
+            터치 및 대기 상태로 재화를 모으는 <span class="kw">방치형 클리커 게임</span>.<br>
+            성장 곡선과 재화 인플레이션 관리에 초점을 둔 <br>경제 구조를 설계중 입니다.<br><br><br><br><br><br>
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
             <span class="info-sidebar__meta-value">방치형 / 캐주얼</span>
+			<span class="info-sidebar__meta-label">개발 인원:</span>
+            <span class="info-sidebar__meta-value">개발 1 / 기획 1</span>
             <span class="info-sidebar__meta-label">담당:</span>
-            <span class="info-sidebar__meta-value">재화 경제 구조 설계</span>
+            <span class="info-sidebar__meta-value">시스템 · 재화 밸런스 설계</span>
             <span class="info-sidebar__meta-label">개발 기간:</span>
-            <span class="info-sidebar__meta-value">2025.07 ~ 2025.10</span>
+            <span class="info-sidebar__meta-value">2026.04 ~ 진행중</span>
             <span class="info-sidebar__meta-label">툴:</span>
             <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
             <span class="info-sidebar__meta-label">엔진:</span>
@@ -2647,7 +2703,7 @@ img {
       <div class="purchase-box">
         <div class="purchase-box__heading">생쥐 대탈출 — 플레이 가능한 빌드</div>
         <div class="purchase-box__actions">
-          <button class="cta-button-secondary" data-open-links data-links-key="mouse">자료 모두 보기 →</button>
+          <button class="cta-button-secondary" data-open-links data-links-key="mouse">-자료 모아 보기-</button>
           <a class="cta-button-primary" href="https://example.com/mouse-download" target="_blank" rel="noopener">게임 다운로드</a>
         </div>
       </div>
@@ -2768,6 +2824,7 @@ img {
 const MEDIA_BASE = {
   images: 'https://koioas1.github.io/syj_portfolio/img/',
   gif: 'https://koioas1.github.io/syj_portfolio/gif/',
+  video: 'https://koioas1.github.io/syj_portfolio/video/',
   pdf: 'https://koioas1.github.io/syj_portfolio/pdf/'
 };
 
@@ -2855,12 +2912,13 @@ const VALID_PAGES = ['intro', 'donutcrash', 'ptd', 'mouse'];
 
 // ============================================================
 // 외부 이미지 일괄 주입
-// 다섯 가지 패턴 지원:
+// 여섯 가지 패턴 지원:
 // (1) data-img-src: MEDIA_BASE.images 기준 상대 경로 → src
 // (2) data-gif-src: MEDIA_BASE.gif 기준 상대 경로 → src (움짤 전용)
-// (3) data-img-direct: 절대 URL 직접 사용 → src (외부 도메인 이미지)
-// (4) data-bg-img: 절대 URL → background-image (히어로 배경 등)
-// (5) data-bg-gif: MEDIA_BASE.gif 기준 상대 경로 → background-image
+// (3) data-video-src: MEDIA_BASE.video 기준 상대 경로 → src (mp4 등 동영상)
+// (4) data-img-direct: 절대 URL 직접 사용 → src (외부 도메인 이미지)
+// (5) data-bg-img: 절대 URL → background-image (히어로 배경 등)
+// (6) data-bg-gif: MEDIA_BASE.gif 기준 상대 경로 → background-image
 // ============================================================
 function injectImages() {
   // (1) 이미지 베이스 URL 기준 상대 경로 — png/jpg 등 정적 이미지
@@ -2873,17 +2931,26 @@ function injectImages() {
     const relativePath = el.getAttribute('data-gif-src');
     el.src = MEDIA_BASE.gif + relativePath;
   });
-  // (3) 절대 URL을 src에 직접 주입 — 외부 도메인 이미지
+  // (3) 동영상 베이스 URL 기준 상대 경로 — <video> 또는 <source> 태그의 src에 주입
+  document.querySelectorAll('[data-video-src]').forEach(function(el) {
+    const relativePath = el.getAttribute('data-video-src');
+    el.src = MEDIA_BASE.video + relativePath;
+    // <source> 태그에 주입한 경우 부모 <video>를 다시 로드해야 src가 적용됨
+    if (el.tagName === 'SOURCE' && el.parentElement && el.parentElement.tagName === 'VIDEO') {
+      el.parentElement.load();
+    }
+  });
+  // (4) 절대 URL을 src에 직접 주입 — 외부 도메인 이미지
   document.querySelectorAll('[data-img-direct]').forEach(function(el) {
     const directUrl = el.getAttribute('data-img-direct');
     el.src = directUrl;
   });
-  // (4) 절대 URL을 background-image로 주입 — 히어로 배경 레이어 등
+  // (5) 절대 URL을 background-image로 주입 — 히어로 배경 레이어 등
   document.querySelectorAll('[data-bg-img]').forEach(function(el) {
     const directUrl = el.getAttribute('data-bg-img');
     el.style.backgroundImage = 'url("' + directUrl + '")';
   });
-  // (5) 움짤 베이스 URL 기준 상대 경로를 background-image로 주입
+  // (6) 움짤 베이스 URL 기준 상대 경로를 background-image로 주입
   document.querySelectorAll('[data-bg-gif]').forEach(function(el) {
     const relativePath = el.getAttribute('data-bg-gif');
     el.style.backgroundImage = 'url("' + MEDIA_BASE.gif + encodeURI(relativePath) + '")';
@@ -2958,48 +3025,132 @@ function initSlider(sliderEl) {
   const slides = sliderEl.querySelectorAll('.media-slider__slide');
   const thumbs = sliderEl.querySelectorAll('.media-slider__thumb');
   let currentIndex = 0;
-  let intervalId = null;
-  const ROTATE_MS = 5000;
+  let timerId = null;       // 이미지 슬라이드용 setTimeout 핸들
+  let isPaused = false;     // 호버/페이지이탈 일시정지 상태
+  const ROTATE_MS = 5000;   // 이미지 슬라이드 노출 시간
+
+  // 현재 슬라이드에 걸어둔 "다음 전환 예약"을 모두 해제 — 타이머 + 비디오 ended 리스너
+  function clearSchedule() {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+    // 비디오에 등록한 ended 리스너 제거(중복 전환 방지)
+    slides.forEach(function(slide) {
+      const video = slide.querySelector('video');
+      if (video && video._onEnded) {
+        video.removeEventListener('ended', video._onEnded);
+        video._onEnded = null;
+      }
+    });
+  }
+
+  // 현재 활성 슬라이드 타입에 맞춰 "다음으로 넘어갈 시점"을 예약
+  // - 비디오 슬라이드: 영상이 끝날 때(ended)까지 대기 후 전환 (5초 강제 전환 X)
+  // - 이미지 슬라이드: 기존처럼 5초 타이머 후 전환
+  function schedule() {
+    clearSchedule();
+    if (isPaused) return;
+
+    const activeSlide = slides[currentIndex];
+    const video = activeSlide ? activeSlide.querySelector('video') : null;
+
+    if (video) {
+      // 비디오는 재생이 끝나면 다음으로 — 한 번만 동작하도록 리스너 등록
+      const onEnded = function() {
+        video.removeEventListener('ended', onEnded);
+        video._onEnded = null;
+        next();
+      };
+      video._onEnded = onEnded;
+      video.addEventListener('ended', onEnded);
+    } else {
+      // 이미지는 고정 시간 후 전환
+      timerId = setTimeout(next, ROTATE_MS);
+    }
+  }
 
   function goTo(index) {
     slides.forEach(function(slide, i) {
-      slide.classList.toggle('media-slider__slide--active', i === index);
+      const isActive = (i === index);
+      slide.classList.toggle('media-slider__slide--active', isActive);
+      // 슬라이드 안에 비디오가 있으면 활성 슬라이드만 재생, 나머지는 정지
+      const video = slide.querySelector('video');
+      if (video) {
+        if (isActive) {
+          // 음소거 자동재생 — 브라우저 정책 통과를 위해 muted 보장
+          video.muted = true;
+          // 재진입 시 처음부터 재생되도록 시간 리셋
+          try { video.currentTime = 0; } catch (e) {}
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(function() { /* 자동재생 실패 무시 */ });
+          }
+        } else {
+          video.pause();
+        }
+      }
     });
     thumbs.forEach(function(thumb, i) {
       thumb.classList.toggle('media-slider__thumb--active', i === index);
     });
     currentIndex = index;
+    // 새 슬라이드가 활성화될 때마다 다음 전환 시점을 다시 예약
+    schedule();
   }
 
   function next() {
     goTo((currentIndex + 1) % slides.length);
   }
 
+  // 자동 회전 재개 — 현재 슬라이드 기준으로 다시 재생/예약
   function start() {
-    stop();
-    intervalId = setInterval(next, ROTATE_MS);
+    isPaused = false;
+    const activeSlide = slides[currentIndex];
+    const video = activeSlide ? activeSlide.querySelector('video') : null;
+    // 활성 비디오가 정지 상태면 다시 재생(이어보기)
+    if (video) {
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(function() {});
+      }
+    }
+    schedule();
   }
   function stop() {
-    if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
-    }
+    isPaused = true;
+    clearSchedule();
+    // 페이지 이탈/호버 시에는 모든 비디오를 정지해 리소스 절약
+    slides.forEach(function(slide) {
+      const video = slide.querySelector('video');
+      if (video) video.pause();
+    });
   }
 
-  // 썸네일 클릭 — 자동 회전 정지 후 점프
+  // 썸네일 클릭 — 정지 후 해당 슬라이드로 점프, 다시 자동 진행
   thumbs.forEach(function(thumb, i) {
     thumb.addEventListener('click', function() {
-      stop();
+      clearSchedule();
+      isPaused = false;   // goTo 안의 schedule이 동작하도록 일시정지 해제
       goTo(i);
-      start();
     });
   });
 
-  // 호버 시 일시정지
-  sliderEl.addEventListener('mouseenter', stop);
+  // 호버 시 일시정지 — 비디오는 일시정지, 이미지 타이머는 중단
+  sliderEl.addEventListener('mouseenter', function() {
+    isPaused = true;
+    clearSchedule();
+    const activeSlide = slides[currentIndex];
+    const video = activeSlide ? activeSlide.querySelector('video') : null;
+    if (video) video.pause();
+  });
+  // 마우스리브 시 현재 슬라이드 기준으로 자동 재개
   sliderEl.addEventListener('mouseleave', start);
 
-  start();
+  // 초기 진입 — goTo(0)가 첫 슬라이드 재생 및 전환 예약까지 처리
+  isPaused = false;
+  goTo(0);
   sliderInstances.set(sliderEl, { start: start, stop: stop });
 }
 
