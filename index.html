@@ -48,6 +48,9 @@
   --space-xxl: 48px;
   --space-section: 64px;
 
+  /* 사이드바 blurb 하단 여백 — meta+tags 묶음을 약 4줄 아래로 미는 고정 간격 */
+  --sidebar-blurb-gap: 80px;
+
   /* 라디우스 스케일 — 스팀 특유의 거의 직각 */
   --radius-none: 0;
   --radius-xs: 2px;
@@ -566,6 +569,12 @@ img {
   line-height: 1.55;
   color: var(--text-primary);
   max-width: 560px;
+}
+
+/* 캐치프레이즈 라인 — 아래 설명 문장과 분리하는 블록 + 하단 여백 (기존 <br> 대체) */
+.intro-hero__pitch-quote {
+  display: block;
+  margin-bottom: var(--space-xs);
 }
 
 .intro-hero__contact {
@@ -1124,6 +1133,8 @@ img {
   font-size: 13px;
   line-height: 1.5;
   color: var(--text-primary);
+  /* blurb 아래 약 4줄 여백 — meta+tags 그룹을 아래로 밀어 배치 */
+  margin-bottom: var(--sidebar-blurb-gap);
 }
 
 /* 메타 블록 — 라벨/값 2단 그리드 */
@@ -1292,7 +1303,7 @@ img {
 .about-item__media {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background-color: var(--surface-card);
+  background-color: var(--surface-page);
   overflow: hidden;
 }
 
@@ -1300,6 +1311,17 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.about-item__media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* contain — 원본 비율을 유지한 채 영상 전체가 프레임 안에 들어가도록 (잘림 방지).
+     16:9가 아닌 영상은 좌우/상하에 프레임 배경색 여백이 생긴다. */
+  object-fit: contain;
+  /* 자동재생 전용 — 클릭/조작 불가 (멈추기·소리켜기 차단) */
+  pointer-events: none;
 }
 
 .about-item__text {
@@ -1951,6 +1973,11 @@ img {
     width: 100%;
   }
 
+  /* 단일 컬럼에서는 슬라이더 옆 정렬용 4줄 여백이 불필요 — 보통 간격으로 축소 */
+  .info-sidebar__blurb {
+    margin-bottom: var(--space-md);
+  }
+
   /* 어바웃 아이템 — 이미지 위, 텍스트 아래 (reverse 무시) */
   .about-item,
   .about-item--reverse {
@@ -2086,7 +2113,7 @@ img {
         <span class="intro__headline-accent">서윤준</span> 게임 기획 포트폴리오
       </h1>
       <p class="intro__sub">
-        4년간의 회계 실무에서 다져진 데이터 무결성과 수치 검증 능력을<br>
+        4년간의 회계 실무에서 다져진 데이터 무결성과 수치 검증 능력을
         게임 시스템 설계와 데이터 시뮬레이션에 접목하는 신입 게임 기획자입니다.
       </p>
       <button class="intro__cta" id="introCta">Enter Portfolio</button>
@@ -2131,7 +2158,7 @@ img {
         <span class="intro-hero__role">Junior Game Designer · 신입 게임 기획자</span>
         <h1 class="intro-hero__name">서윤준</h1>
         <p class="intro-hero__pitch">
-          <span class="kw">"숫자의 오차를 허용하지 않는 회계의 시선으로, 게임의 시스템을 설계합니다"</span><br>
+          <span class="kw intro-hero__pitch-quote">"숫자의 오차를 허용하지 않는 회계의 시선으로, 게임의 시스템을 설계합니다"</span>
           4년간 회계 실무에서 길러진 데이터 무결성 검증 능력과 꼼꼼함을 무기로,
           시스템 설계와 데이터 시뮬레이션에 강점을 가진 신입 게임 기획자입니다.
         </p>
@@ -2199,7 +2226,7 @@ img {
       <div class="skill-grid">
         <div class="skill-card">
           <div class="skill-card__title">게임 시스템 설계</div>
-          <div class="skill-card__desc">전투·스킬·재화 구조를 규칙과 수식으로<br> 정립하여 의도된 플레이 경험을 설계</div>
+          <div class="skill-card__desc">전투·스킬·재화 구조를 규칙과 수식으로 정립하여 의도된 플레이 경험을 설계</div>
         </div>
         <div class="skill-card">
           <div class="skill-card__title">데이터 시뮬레이션</div>
@@ -2231,7 +2258,7 @@ img {
           <div class="career-card__title">셀아처 코스메틱 · 회계/경영관리</div>
           <div class="career-card__desc">
             회계 실무를 담당하며 숫자 데이터 속에서 <span class="kw">오차를 허용하지 않는 꼼꼼함</span>과
-            데이터 무결성 검증 능력을 길렀습니다.<br>
+            데이터 무결성 검증 능력을 길렀습니다.
 			이러한 경험은 게임 시스템 설계와 데이터 시뮬레이션에서 미세한 수치를 다루는 데 있어 강력한 무기가 되었습니다.
           </div>
         </div>
@@ -2470,8 +2497,8 @@ img {
             <img data-img-src="dc_title_img.png" alt="Donut Crash 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
-            5개의 도넛 덱을 활용한 <span class="kw">턴제 물리 충돌 전투</span> 게임.<br>
-            각각 도넛들의 고유 스탯의 상성 관계와<br>티어 성장 곡선을 설계했습니다.<br><br><br><br><br><br>
+            5개의&nbsp;도넛 덱을 활용한 <span class="kw">턴제 물리 충돌 전투</span> 게임.
+            각각 도넛들의 고유 스탯의 상성 관계와 티어 성장 곡선을 설계했습니다.
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
@@ -2511,55 +2538,6 @@ img {
     </div>
   </section>
 
-  <section class="about-showcase">
-    <div class="about-showcase__inner">
-      <div class="section-header">
-        <h2 class="section-header__title">About this project</h2>
-      </div>
-      <div class="about-showcase__list">
-        <article class="about-item">
-          <div class="about-item__media">
-            <img data-img-src="donutcrash/about-1.png" alt="턴제 충돌 시스템 다이어그램">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">5개 덱의 턴제 물리 충돌 전투</h3>
-            <p class="about-item__body">
-              도넛 5장의 덱을 구성하고 턴마다 한 장씩 발사하는 충돌 기반 전투 로직을 설계했습니다.
-              <span class="kw">속도, 질량, 충돌 각도</span>가 데미지 계산에 직접 반영되어
-              단순한 카드 게임이 아닌 물리적 직관이 작동하는 전투를 만들었습니다.
-            </p>
-          </div>
-        </article>
-        <article class="about-item about-item--reverse">
-          <div class="about-item__media">
-            <img data-img-src="donutcrash/about-2.png" alt="데미지 계산식 플로우차트">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">정밀한 데미지 공식 설계</h3>
-            <p class="about-item__body">
-              <span class="kw">DMG = (ATK − DEF) × Speed/10</span> 의 기본 공식을 시작으로
-              크리티컬, 최소 피해 보장, 예외 처리까지 단일 플로우차트로 정리했습니다.
-              <span class="kw">단 1의 수치 차이</span>가 만드는 타격감을 시뮬레이션으로 검증했습니다.
-            </p>
-          </div>
-        </article>
-        <article class="about-item">
-          <div class="about-item__media">
-            <img data-img-src="donutcrash/about-3.png" alt="스킬 시스템 테이블">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">모듈화된 스킬 시스템</h3>
-            <p class="about-item__body">
-              도넛별 고유 스킬을 <span class="kw">데이터 테이블 기반</span>으로 구조화하여
-              확장과 수정이 용이하도록 설계했습니다.
-              동일 효과의 스킬은 중첩되지 않고 지속 시간만 갱신되는 일관성 규칙을 정립했습니다.
-            </p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ DEV NOTE — DonutCrash ============ -->
   <section class="devnote">
     <div class="devnote__inner">
@@ -2593,7 +2571,7 @@ img {
         <!-- STEP 02. 디자인 포인트 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
           <div class="about-item__media">
-            <img data-img-src="donutcrash/note-design.png" alt="핵심 재미 요소 정리">
+            <video data-video-src="DC_핵심재미.mp4" autoplay muted loop playsinline preload="metadata" aria-label="핵심 재미 요소 영상"></video>
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 02 · 디자인 포인트</div>
@@ -2612,7 +2590,7 @@ img {
             <img data-img-src="donutcrash/note-trouble.png" alt="밸런스 조정 전후 비교 데이터">
           </div>
           <div class="about-item__text">
-            <div class="devnote-step">STEP 03 · 문제 해결</div>
+            <div class="devnote-step">STEP 03 · 문제 해결 — A</div>
             <h3 class="about-item__heading">선공 도넛이 너무 강했던 문제</h3>
             <div class="devnote-trouble">
               <div class="devnote-trouble__row">
@@ -2639,13 +2617,44 @@ img {
           </div>
         </article>
 
-        <!-- STEP 04. 결과 정리 (이미지 오른쪽) -->
+        <!-- STEP 03-B. 문제 해결 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="donutcrash/note-trouble-b.png" alt="문제 해결 사례 B">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 03 · 문제 해결 — B</div>
+            <h3 class="about-item__heading">(문제 해결 B 제목을 입력하세요)</h3>
+            <div class="devnote-trouble">
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--problem">문제</span>
+                <p class="devnote-trouble__text">
+                  (문제 B 내용을 입력하세요.)
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--solution">해결</span>
+                <p class="devnote-trouble__text">
+                  (해결 B 내용을 입력하세요.)
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--result">결과</span>
+                <p class="devnote-trouble__text">
+                  (결과 B 내용을 입력하세요.)
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 04. 결과 정리 (이미지 왼쪽) -->
+        <article class="about-item">
           <div class="about-item__media">
             <img data-img-src="donutcrash/note-result.png" alt="완성된 인게임 화면과 산출물">
           </div>
           <div class="about-item__text">
-            <div class="devnote-step">STEP 04 · 결과 정리</div>
+            <div class="devnote-step">STEP 04 · 결과 정리 — A</div>
             <h3 class="about-item__heading">작업 산출물</h3>
             <ul class="devnote-results">
               <li><strong>전투 시스템 기획서</strong>턴제 충돌 로직과 승리 조건, 데미지 공식을 단일 문서로 정립</li>
@@ -2655,6 +2664,25 @@ img {
             <div class="devnote-reflect">
               <strong>배운 점.</strong> 수치 하나의 변화가 전체 전투 경험을 바꾼다는 것을 체감했고,
               "감"이 아니라 반복 검증으로 밸런스를 잡는 습관을 얻었습니다.
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 04-B. 결과 정리 (이미지 오른쪽) -->
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="donutcrash/note-result-b.png" alt="결과 정리 B">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 04 · 결과 정리 — B</div>
+            <h3 class="about-item__heading">(결과 정리 B 제목을 입력하세요)</h3>
+            <ul class="devnote-results">
+              <li><strong>(산출물 B-1)</strong>(설명을 입력하세요)</li>
+              <li><strong>(산출물 B-2)</strong>(설명을 입력하세요)</li>
+              <li><strong>(산출물 B-3)</strong>(설명을 입력하세요)</li>
+            </ul>
+            <div class="devnote-reflect">
+              <strong>배운 점.</strong> (배운 점 B 내용을 입력하세요.)
             </div>
           </div>
         </article>
@@ -2783,9 +2811,8 @@ img {
             <img data-img-src="PTD_title_img.png" alt="PathTowerDefence 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
-            <span class="kw">타워로 경로를 직접 설계</span>하는 차세대 TD.<br>
-            4종족 고유한 특성과 무작위 상점 시스템, 적들의 경로로<br>
-			매판 다른 전략 설계를 유도합니다.<br><br><br><br><br><br>
+            <span class="kw">타워로 경로를 직접 설계</span>하는 차세대&nbsp;TD.
+            4종족&nbsp;고유한 특성과 무작위 상점 시스템, 적들의 경로로 매판 다른 전략 설계를 유도합니다.
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
@@ -2825,55 +2852,6 @@ img {
     </div>
   </section>
 
-  <section class="about-showcase">
-    <div class="about-showcase__inner">
-      <div class="section-header">
-        <h2 class="section-header__title">About this project</h2>
-      </div>
-      <div class="about-showcase__list">
-        <article class="about-item">
-          <div class="about-item__media">
-            <img data-img-src="ptd/about-1.png" alt="경로 설계 시스템">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">타워로 경로를 직접 설계</h3>
-            <p class="about-item__body">
-              기존 TD의 고정 경로에서 벗어나 <span class="kw">매 게임마다 무작위 경로</span>가 생성되고,
-              플레이어가 타워 배치로 적의 동선을 유도합니다. 도착 지점만 막지 않으면 자유롭게 배치 가능한
-              주도적 설계의 재미를 제공합니다.
-            </p>
-          </div>
-        </article>
-        <article class="about-item about-item--reverse">
-          <div class="about-item__media">
-            <img data-img-src="ptd/about-2.png" alt="종족 시너지 시스템">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">4종족 시너지 시스템</h3>
-            <p class="about-item__body">
-              <span class="kw">인간, 엘프, 드워프, 용족</span> 4종족 타워를 조합하여 공격력, 공격속도,
-              적 감속, 골드 수급 등 고유 시너지를 발동합니다. 종족 조합과 상점 구성에 따라
-              유저 맞춤형 전략 설계가 가능합니다.
-            </p>
-          </div>
-        </article>
-        <article class="about-item">
-          <div class="about-item__media">
-            <img data-img-src="ptd/about-3.png" alt="웨이브 밸런싱 시뮬레이션">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">엑셀 기반 웨이브 밸런싱</h3>
-            <p class="about-item__body">
-              몬스터의 이동 속도와 체력 증가 폭을 <span class="kw">엑셀 시뮬레이션</span>으로 검증하여
-              후반부 긴장감을 유지하는 난이도 곡선을 설계했습니다. 타워별 데미지 효율을 계산해
-              특정 타워만 선호되는 현상을 방지했습니다.
-            </p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ DEV NOTE — PTD ============ -->
   <section class="devnote">
     <div class="devnote__inner">
@@ -2885,7 +2863,7 @@ img {
         <!-- STEP 01. 역할과 목표 (이미지 왼쪽) -->
         <article class="about-item">
           <div class="about-item__media">
-            <img data-img-src="ptd/note-role.png" alt="1인 개발 담당 범위">
+            <img data-img-src="PTD_1인개발.png" alt="1인 개발 담당 범위">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 01 · 역할과 목표</div>
@@ -2906,15 +2884,15 @@ img {
         <!-- STEP 02. 디자인 포인트 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
           <div class="about-item__media">
-            <img data-img-src="ptd/note-design.png" alt="핵심 재미 요소 정리">
+            <video data-video-src="PTD_핵심재미.mp4" autoplay muted loop playsinline preload="metadata" aria-label="핵심 재미 요소 영상"></video>
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 02 · 디자인 포인트</div>
             <h3 class="about-item__heading">이 게임에서 노린 재미</h3>
             <ul class="devnote-points">
               <li><strong>경로를 직접 설계</strong><span class="devnote-point__desc">매판 바뀌는 출발지·도착지에 맞춰 타워 배치로 적의 동선을 유도하는 주도적 설계</span></li>
-              <li><strong>강화와 유도의 딜레마</strong><span class="devnote-point__desc">타워를 강화할수록 경로를 유도할 타워 수가 줄어드는 자원 긴장 관계</span></li>
               <li><strong>3개 조합 → 상위 타워</strong><span class="devnote-point__desc">설치한 타워 3개를 합쳐 더 높은 등급으로 키우는 빌드 선택지</span></li>
+              <li><strong>강화와 유도의 딜레마</strong><span class="devnote-point__desc">타워를 강화할수록 경로를 유도할 타워 수가 줄어드는 자원 긴장 관계</span></li>
             </ul>
           </div>
         </article>
@@ -2922,10 +2900,10 @@ img {
         <!-- STEP 03. 문제 해결 (이미지 왼쪽) -->
         <article class="about-item">
           <div class="about-item__media">
-            <img data-img-src="ptd/note-trouble.png" alt="강화/유도 밸런스 시뮬레이션">
+            <video data-video-src="PTD_문제점1.mp4" autoplay muted loop playsinline preload="metadata" aria-label="강화/유도 밸런스 시뮬레이션 영상"></video>
           </div>
           <div class="about-item__text">
-            <div class="devnote-step">STEP 03 · 문제 해결</div>
+            <div class="devnote-step">STEP 03 · 문제 해결 — A</div>
             <h3 class="about-item__heading">강화에만 몰리면 단조로워지는 문제</h3>
             <div class="devnote-trouble">
               <div class="devnote-trouble__row">
@@ -2953,13 +2931,44 @@ img {
           </div>
         </article>
 
-        <!-- STEP 04. 결과 정리 (이미지 오른쪽) -->
+        <!-- STEP 03-B. 문제 해결 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="ptd/note-trouble-b.png" alt="문제 해결 사례 B">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 03 · 문제 해결 — B</div>
+            <h3 class="about-item__heading">(문제 해결 B 제목을 입력하세요)</h3>
+            <div class="devnote-trouble">
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--problem">문제</span>
+                <p class="devnote-trouble__text">
+                  (문제 B 내용을 입력하세요.)
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--solution">해결</span>
+                <p class="devnote-trouble__text">
+                  (해결 B 내용을 입력하세요.)
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--result">결과</span>
+                <p class="devnote-trouble__text">
+                  (결과 B 내용을 입력하세요.)
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 04. 결과 정리 (이미지 왼쪽) -->
+        <article class="about-item">
           <div class="about-item__media">
             <img data-img-src="ptd/note-result.png" alt="완성된 게임 화면과 산출물">
           </div>
           <div class="about-item__text">
-            <div class="devnote-step">STEP 04 · 결과 정리</div>
+            <div class="devnote-step">STEP 04 · 결과 정리 — A</div>
             <h3 class="about-item__heading">작업 산출물</h3>
             <ul class="devnote-results">
               <li><strong>플레이 가능한 빌드</strong>기획·밸런싱·개발을 혼자 완수해 다운로드 가능한 빌드로 완성</li>
@@ -2969,6 +2978,25 @@ img {
             <div class="devnote-reflect">
               <strong>배운 점.</strong> 핵심 재미를 지키려면 "무엇을 강하게 만드느냐"보다
               "무엇을 포기하게 만드느냐"의 설계가 중요하다는 것을 배웠습니다.
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 04-B. 결과 정리 (이미지 오른쪽) -->
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media">
+            <img data-img-src="ptd/note-result-b.png" alt="결과 정리 B">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 04 · 결과 정리 — B</div>
+            <h3 class="about-item__heading">(결과 정리 B 제목을 입력하세요)</h3>
+            <ul class="devnote-results">
+              <li><strong>(산출물 B-1)</strong>(설명을 입력하세요)</li>
+              <li><strong>(산출물 B-2)</strong>(설명을 입력하세요)</li>
+              <li><strong>(산출물 B-3)</strong>(설명을 입력하세요)</li>
+            </ul>
+            <div class="devnote-reflect">
+              <strong>배운 점.</strong> (배운 점 B 내용을 입력하세요.)
             </div>
           </div>
         </article>
@@ -3072,8 +3100,8 @@ img {
             <img data-img-src="Mouse_title_img.png" alt="생쥐 대탈출 타이틀 아트">
           </div>
           <p class="info-sidebar__blurb">
-            터치 및 대기 상태로 재화를 모으는 <span class="kw">방치형 클리커 게임</span>.<br>
-            성장 곡선과 재화 인플레이션 관리에 초점을 둔 <br>경제 구조를 설계중 입니다.<br><br><br><br><br><br>
+            터치 및 대기 상태로 재화를 모으는 <span class="kw">방치형 클리커 게임</span>.
+            성장 곡선과 재화 인플레이션 관리에 초점을 둔 경제 구조를 설계중 입니다.
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
@@ -3113,55 +3141,6 @@ img {
     </div>
   </section>
 
-  <section class="about-showcase">
-    <div class="about-showcase__inner">
-      <div class="section-header">
-        <h2 class="section-header__title">About this project</h2>
-      </div>
-      <div class="about-showcase__list">
-        <article class="about-item">
-          <div class="about-item__media">
-            <img data-img-src="mouse/about-1.png" alt="터치 재화 획득 루프">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">직관적인 게임 루프</h3>
-            <p class="about-item__body">
-              <span class="kw">터치 → 재화 획득 → 성장 재투자</span>의 단순 루프로
-              즉각적인 보상과 성취감을 제공합니다. 복잡한 조작 없이도 자연스럽게
-              성장 동기가 유지되는 구조를 설계했습니다.
-            </p>
-          </div>
-        </article>
-        <article class="about-item about-item--reverse">
-          <div class="about-item__media">
-            <img data-img-src="mouse/about-2.png" alt="재화 경제 구조">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">장기 플레이를 위한 경제 구조</h3>
-            <p class="about-item__body">
-              재화의 <span class="kw">생성과 소모 구조를 데이터로 구조화</span>하여
-              연구, 장소 해금, 서브 캐릭터 해금 등 다층 소모처를 설계했습니다.
-              인플레이션 관리로 후반부에도 성장 동기가 유지되도록 밸런싱했습니다.
-            </p>
-          </div>
-        </article>
-        <article class="about-item">
-          <div class="about-item__media">
-            <img data-img-src="mouse/about-3.png" alt="광고 수익 모델">
-          </div>
-          <div class="about-item__text">
-            <h3 class="about-item__heading">광고 수익 모델 연동</h3>
-            <p class="about-item__body">
-              성장이 둔화되는 지점을 의도적으로 설계하고, 이를 극복하기 위한 보상을
-              <span class="kw">광고 시청과 결합</span>하여 자연스러운 수익 발생 구조를 만들었습니다.
-              유저 경험을 해치지 않는 시점을 데이터로 검증했습니다.
-            </p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ DEV NOTE — 생쥐 대탈출 ============ -->
   <section class="devnote">
     <div class="devnote__inner">
@@ -3192,7 +3171,7 @@ img {
         <!-- STEP 02. 디자인 포인트 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
           <div class="about-item__media">
-            <img data-img-src="mouse/note-design.png" alt="보조 시스템 구조도">
+            <video data-video-src="MOUSE_핵심재미.mp4" autoplay muted loop playsinline preload="metadata" aria-label="보조 시스템 구조 영상"></video>
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 02 · 디자인 포인트</div>
