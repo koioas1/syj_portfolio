@@ -537,10 +537,8 @@ img {
   width: 100%;
   margin: 0 auto;
   padding: 0 var(--space-md);
-  display: grid;
-  grid-template-columns: 1fr 324px;
-  gap: var(--space-xl);
-  align-items: center;
+  /* 프로필 이미지 제거 — 텍스트 영역이 전체 폭을 사용하는 단일 컬럼 */
+  display: block;
 }
 
 .intro-hero__copy {
@@ -593,20 +591,6 @@ img {
 
 .intro-hero__contact-label {
   color: var(--text-muted);
-}
-
-.intro-hero__portrait {
-  width: 324px;
-  aspect-ratio: 3 / 4;
-  background-color: var(--surface-card);
-  overflow: hidden;
-  box-shadow: var(--bevel);
-}
-
-.intro-hero__portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 /* 인트로 본문 섹션 — 핵심 역량 / 경력 / 기술 */
@@ -2004,16 +1988,7 @@ img {
    RESPONSIVE — 1024px / 768px / 480px 세 단계
    ============================================================ */
 @media (max-width: 1024px) {
-  /* 인트로 히어로 — 세로 스택 */
-  .intro-hero__inner {
-    grid-template-columns: 1fr;
-  }
-
-  .intro-hero__portrait {
-    width: 100%;
-    max-width: 324px;
-    aspect-ratio: 16 / 9;
-  }
+  /* 인트로 히어로 — 프로필 이미지 제거로 이미 단일 컬럼 (별도 처리 불필요) */
 
   /* 핵심 역량 — 2x2 그리드 */
   .skill-grid {
@@ -2186,7 +2161,7 @@ img {
       </h1>
       <p class="intro__sub">
         4년간의 회계 실무에서 다져진 데이터 무결성과 수치 검증 능력을
-        게임 시스템 설계와 데이터 시뮬레이션에 접목하는 신입 게임 기획자입니다.
+        게임 시스템 설계,  데이터 시뮬레이션에 접목하는 신입 게임 기획자입니다.
       </p>
       <button class="intro__cta" id="introCta">Enter Portfolio</button>
     </div>
@@ -2230,9 +2205,9 @@ img {
         <span class="intro-hero__role">Junior Game Designer · 신입 게임 기획자</span>
         <h1 class="intro-hero__name">서윤준</h1>
         <p class="intro-hero__pitch">
-          <span class="kw intro-hero__pitch-quote">"숫자의 오차를 허용하지 않는 회계의 시선으로, 게임의 시스템을 설계합니다"</span>
-          4년간 회계 실무에서 길러진 데이터 무결성 검증 능력과 꼼꼼함을 무기로,
-          시스템 설계와 데이터 시뮬레이션에 강점을 가진 신입 게임 기획자입니다.
+          <span class="kw intro-hero__pitch-quote">"전투, 스킬, UI, 재화 경제까지 모든 분야를 작업하고 배워온 기획자"</span>
+          세 개의 프로젝트에서 전 영역을 도맡으며, 규칙과 수식으로 시스템을 정립,
+		  다양한 형태로 구현하여 검증한 게임 기획자, 서윤준 입니다.
         </p>
         <div class="intro-hero__contact">
           <div class="intro-hero__contact-row">
@@ -2244,9 +2219,6 @@ img {
             <span>010-9890-8719</span>
           </div>
         </div>
-      </div>
-      <div class="intro-hero__portrait">
-        <img data-img-src="intro/portrait.png" alt="서윤준 프로필 이미지">
       </div>
     </div>
   </section>
@@ -2727,7 +2699,7 @@ img {
         <!-- STEP 04. 결과 정리 (이미지 왼쪽) -->
         <article class="about-item">
           <div class="about-item__media">
-            <img data-img-src="donutcrash/note-result.png" alt="완성된 인게임 화면과 산출물">
+            <img data-img-src="DC_작업산출물1.png" alt="완성된 인게임 화면과 산출물">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 04 · 결과 정리 — A</div>
@@ -2747,7 +2719,7 @@ img {
         <!-- STEP 04-B. 결과 정리 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
           <div class="about-item__media">
-            <img data-img-src="donutcrash/note-result-b.png" alt="결과 정리 B">
+            <img data-img-src="DC_작업산출물2.png" alt="결과 정리 B">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 04 · 결과 정리 — B</div>
@@ -2958,7 +2930,7 @@ img {
         <!-- STEP 03-B. 문제 해결 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
           <div class="about-item__media">
-            <img data-img-src="ptd/note-trouble-b.png" alt="OP 타워 밸런스 조정 데이터">
+            <img data-img-src="PTD_밸런스.png" alt="OP 타워 밸런스 조정 데이터">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 03 · 문제 해결 — B</div>
@@ -2993,7 +2965,7 @@ img {
         <!-- STEP 04. 결과 정리 (이미지 왼쪽) -->
         <article class="about-item">
           <div class="about-item__media">
-            <img data-img-src="ptd/note-result.png" alt="완성된 게임 화면과 산출물">
+            <img data-img-src="PTD_밸런스조절.jpg" alt="완성된 게임 화면과 산출물">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 04 · 결과 정리</div>
@@ -3127,7 +3099,7 @@ img {
         <!-- STEP 01. 역할과 목표 (이미지 왼쪽) -->
         <article class="about-item">
           <div class="about-item__media">
-            <img data-img-src="mouse/note-role.png" alt="기획 담당 범위">
+            <img data-img-src="생쥐대탈출_1인기획담당.png" alt="기획 담당 범위">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 01 · 역할과 목표</div>
@@ -3163,7 +3135,7 @@ img {
         <!-- STEP 03. 진행 중 의사결정 (이미지 왼쪽) -->
         <article class="about-item">
           <div class="about-item__media">
-            <img data-img-src="mouse/note-trouble.png" alt="성장 곡선 설계 데이터">
+            <img data-img-src="생쥐대탈출_성장곡선.png" alt="성장 곡선 설계 데이터">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 03 · 진행 중 고민</div>
@@ -3197,7 +3169,7 @@ img {
         <!-- STEP 04. 현 단계 산출물 + 다음 계획 (이미지 오른쪽) -->
         <article class="about-item about-item--reverse">
           <div class="about-item__media">
-            <img data-img-src="mouse/note-result.png" alt="기획 산출물 — UI·플레이 기획서">
+            <img data-img-src="생쥐대탈출_결과물.png" alt="기획 산출물 — UI·플레이 기획서">
           </div>
           <div class="about-item__text">
             <div class="devnote-step">STEP 04 · 현재 진행 상황</div>
