@@ -1324,6 +1324,13 @@ img {
   pointer-events: none;
 }
 
+/* contain modifier — 이미지를 잘라내지 않고 원본 비율 그대로 슬롯 안에 전부 보이도록.
+   16:9가 아닌 이미지는 좌우/상하에 슬롯 배경색 여백이 생긴다.
+   기본 .about-item__media img 의 cover 와 달리, 이 클래스가 붙은 슬롯의 이미지만 contain 처리. */
+.about-item__media--contain img {
+  object-fit: contain;
+}
+
 .about-item__text {
   display: flex;
   flex-direction: column;
@@ -1494,7 +1501,11 @@ img {
   margin-top: var(--space-xs);
 }
 
+/* STEP 04 결과 항목 — STEP 02(.devnote-points li)와 동일하게 좌측 시안 세로 라인 부여 */
 .devnote-results li {
+  position: relative;
+  padding-left: var(--space-sm);
+  border-left: 2px solid var(--accent-cyan);
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-primary);
@@ -1520,6 +1531,60 @@ img {
 
 .devnote-reflect strong {
   color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------
+   DEV NOTE — 항목 호버 하이라이트 (시각 확인용)
+   디자인 시스템 규칙 준수: translate 금지 · 200ms ease · 시안 액센트만 사용
+   카드 이동 없이 배경/라인/텍스트 색상 변화로만 인터랙션 표현
+   ------------------------------------------------------------ */
+
+/* STEP 01 — 역할 배지 호버: 태그 배경을 한 단계 밝히고 텍스트를 밝은 시안으로 */
+.devnote-role {
+  transition: background-color 200ms ease, color 200ms ease;
+  cursor: default;
+}
+.devnote-role:hover {
+  background-color: var(--tag-bg-hover);
+  color: var(--accent-cyan-bright);
+}
+
+/* STEP 02 디자인 포인트 · STEP 04 결과 항목 — 좌측 세로 라인을 가진 목록 공통 호버 */
+/* 호버 시 배경 살짝 들어오고 라인이 밝아지며 제목이 밝은 시안으로 강조됨 */
+.devnote-points li,
+.devnote-results li {
+  transition: background-color 200ms ease, border-color 200ms ease;
+  /* 좌측 라인과 텍스트 사이 간격은 유지하되, 호버 배경이 라인까지 자연스럽게 감싸도록 우측 패딩 부여 */
+  padding-top: var(--space-xs);
+  padding-bottom: var(--space-xs);
+  padding-right: var(--space-sm);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.devnote-points li:hover,
+.devnote-results li:hover {
+  background-color: var(--surface-purchase);
+  border-left-color: var(--accent-cyan-bright);
+}
+.devnote-points li:hover strong,
+.devnote-results li:hover strong {
+  color: var(--accent-cyan-bright);
+}
+
+/* STEP 03 문제 해결 행 — 호버 시 행 전체 배경 강조 및 텍스트 가독성 상승 */
+.devnote-trouble__row {
+  transition: background-color 200ms ease;
+  border-radius: var(--radius-sm);
+  /* grid 행 내부 여백 — 호버 배경이 라벨·본문을 함께 감싸도록 */
+  padding: var(--space-xs) var(--space-sm);
+  /* 좌측 라벨 칼럼 폭 보정: 기존 64px 유지하되 패딩만큼 음수 마진 없이 자연 정렬 */
+  margin-left: calc(var(--space-sm) * -1);
+  margin-right: calc(var(--space-sm) * -1);
+}
+.devnote-trouble__row:hover {
+  background-color: var(--surface-purchase);
+}
+.devnote-trouble__row:hover .devnote-trouble__text {
+  color: var(--text-headline);
 }
 
 @media (max-width: 768px) {
@@ -2555,7 +2620,8 @@ img {
 
         <!-- STEP 01. 역할과 목표 (이미지 왼쪽) -->
         <article class="about-item">
-          <div class="about-item__media">
+          <!-- contain modifier — 담당 범위 이미지가 잘리지 않고 전체가 보이도록 (여백 허용) -->
+          <div class="about-item__media about-item__media--contain">
             <img data-img-src="DC_인게임담당.png" alt="인게임 담당 범위">
           </div>
           <div class="about-item__text">
@@ -2968,17 +3034,21 @@ img {
               <video data-video-src="Mouse_타이틀영상.mp4" muted playsinline preload="metadata" aria-label="생쥐대탈출 데모 영상"></video>
               <div class="media-slider__caption">게임 플레이</div>
             </div>
-            <div class="media-slider__slide media-slider__slide--active" data-slide="0">
-              <img data-img-src="mouse/slide-1.png" alt="생쥐 대탈출 게임플레이 1">
-              <div class="media-slider__caption">터치 시 재화 획득 — 핵심 게임 루프</div>
-            </div>
             <div class="media-slider__slide" data-slide="1">
-              <img data-img-src="mouse/slide-2.png" alt="생쥐 대탈출 게임플레이 2">
-              <div class="media-slider__caption">방치형 자원 누적 시스템</div>
+              <img data-img-src="생쥐대탈출_1st_img.jpg" alt="생쥐 대탈출 게임플레이 2">
+              <div class="media-slider__caption">시스템_지역이동</div>
             </div>
             <div class="media-slider__slide" data-slide="2">
-              <img data-img-src="mouse/slide-3.png" alt="생쥐 대탈출 게임플레이 3">
-              <div class="media-slider__caption">UI 흐름도 — 메인부터 팝업까지</div>
+              <img data-img-src="생쥐대탈출_2nd_img.jpg" alt="생쥐 대탈출 게임플레이 2">
+              <div class="media-slider__caption">시스템_캐릭터스킨</div>
+            </div>
+            <div class="media-slider__slide" data-slide="3">
+              <img data-img-src="생쥐대탈출_3rd_img.png" alt="생쥐 대탈출 게임플레이 3">
+              <div class="media-slider__caption">시스템_연구기능</div>
+            </div>
+			<div class="media-slider__slide" data-slide="4">
+              <img data-img-src="생쥐대탈출_4th_img.png" alt="생쥐 대탈출 게임플레이 3">
+              <div class="media-slider__caption">시스템_기념품</div>
             </div>
           </div>
           <div class="media-slider__thumbs">
@@ -2986,10 +3056,16 @@ img {
               <img data-img-src="Mouse_타이틀영상.jpg" alt="">
             </button>
             <button class="media-slider__thumb" data-thumb="1" aria-label="슬라이드 2">
-              <img data-img-src="mouse/thumb-2.png" alt="">
+              <img data-img-src="생쥐대탈출_1st_img.jpg" alt="">
             </button>
             <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 3">
-              <img data-img-src="mouse/thumb-3.png" alt="">
+              <img data-img-src="생쥐대탈출_2nd_img.jpg" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 4">
+              <img data-img-src="생쥐대탈출_3rd_img.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 5">
+              <img data-img-src="생쥐대탈출_4th_img.png" alt="">
             </button>
           </div>
         </div>
@@ -3062,7 +3138,7 @@ img {
               <span class="devnote-role">재화 경제 설계</span>
             </div>
             <p class="devnote-goal">
-              방치형 클리커를 <span class="kw">모바일 출시 기준</span>으로 기획하는 1인 프로젝트입니다.
+              방치형 클리커를 <span class="kw">모바일 출시 기준</span>으로 기획하는 기획1인·개발1인 프로젝트입니다.
               터치·방치 수익 루프와 <span class="kw">4개 성장 축</span>, UI 흐름을 설계하며 '이야기가 있는 방치형'을 구체화하는 중입니다.
             </p>
           </div>
