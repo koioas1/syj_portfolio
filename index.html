@@ -48,6 +48,9 @@
   --space-xxl: 48px;
   --space-section: 64px;
 
+  /* 기획서 인라인 뷰어 프레임 높이 — PDF 한 페이지가 읽히는 최소 높이 */
+  --doc-viewer-height: 860px;
+
   /* 사이드바 blurb 하단 여백 — meta+tags 묶음을 약 4줄 아래로 미는 고정 간격 */
   --sidebar-blurb-gap: 80px;
 
@@ -68,10 +71,10 @@
   --cyan-inset: inset 0 0 0 2px #66c0f4;
 
   /* 외부 리소스 베이스 URL — GitHub Pages 호스팅용 (이미지 / 움짤 / 동영상 / 문서 4종 분리) */
-  --media-base-images: "https://koioas1.github.io/syj_portfolio/img/";
-  --media-base-gif: "https://koioas1.github.io/syj_portfolio/gif/";
-  --media-base-video: "https://koioas1.github.io/syj_portfolio/video/";
-  --media-base-pdf: "https://koioas1.github.io/syj_portfolio/pdf/";
+  --media-base-images: "https://koioas1.github.io/syj_web_portfolio/img/";
+  --media-base-gif: "https://koioas1.github.io/syj_web_portfolio/gif/";
+  --media-base-video: "https://koioas1.github.io/syj_web_portfolio/video/";
+  --media-base-pdf: "https://koioas1.github.io/syj_web_portfolio/pdf/";
 
   /* 폰트 스택 — 모티바 산스 + 한글 폴백 */
   --font-stack: "Motiva Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
@@ -1156,6 +1159,25 @@ img {
   gap: var(--space-xxs);
 }
 
+/* 프로젝트 상태 노트 — 중단·종료 등 기간 표기만으로 설명되지 않는 사정을 적는 칸.
+   좌측 시안 바로 메타 블록과 시각적으로 구분한다. 필요한 페이지에만 넣는다. */
+.info-sidebar__note {
+  background-color: var(--surface-purchase);
+  border-left: 2px solid var(--accent-cyan);
+  border-radius: var(--radius-xs);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* 노트 첫 줄 라벨 — 상태명(잠정 중단 / 계약 종료 등) */
+.info-sidebar__note-label {
+  display: block;
+  margin-bottom: var(--space-xxs);
+  color: var(--accent-cyan);
+}
+
 /* 태그 칩 — 인터랙티브 아님, 시각 표지만 */
 .tag-pill {
   padding: 2px 8px;
@@ -1578,6 +1600,131 @@ img {
   .devnote-trouble__row {
     grid-template-columns: 52px 1fr;
   }
+}
+
+/* ============================================================
+   DOC VIEWER — 기획서 인라인 뷰어
+   구매 박스 바로 아래에 위치. EXTERNAL_LINKS 데이터를 그대로 읽어
+   그룹 탭 + 문서 탭 + iframe으로 렌더링한다.
+   담당자가 버튼을 누르지 않아도 첫 문서가 자동으로 열린다.
+   ============================================================ */
+.doc-viewer {
+  background-color: var(--surface-page);
+  padding: var(--space-xl) 0 0;
+}
+
+.doc-viewer__inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* 섹션 헤더 아래 안내 한 줄 — 캡션 톤 */
+.doc-viewer__hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* 상단 툴바 — 좌측 그룹 탭, 우측 보조 액션 */
+.doc-viewer__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+/* 그룹 탭 행 — 기획서 / 발표 자료 / 프로토타입 (그룹이 하나면 숨김) */
+.doc-viewer__groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.doc-viewer__group {
+  height: 32px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.doc-viewer__group:hover {
+  color: var(--accent-cyan);
+}
+
+/* 활성 그룹 — 카드 표면으로 올라오고 텍스트는 화이트 */
+.doc-viewer__group.is-active {
+  color: var(--text-headline);
+  background-color: var(--surface-card);
+  box-shadow: var(--bevel);
+}
+
+/* 보조 액션 행 — 크게 보기 / 새 탭 열기 */
+.doc-viewer__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* 문서 탭 행 — 선택된 그룹의 개별 문서 */
+.doc-viewer__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.doc-viewer__tab {
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--text-primary);
+  background-color: var(--surface-purchase);
+  border: none;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--bevel);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.doc-viewer__tab:hover {
+  color: var(--accent-cyan);
+  background-color: var(--surface-card);
+}
+
+/* 활성 문서 탭 — 시안 태그 배경 */
+.doc-viewer__tab.is-active {
+  color: var(--accent-cyan);
+  background-color: var(--tag-bg);
+}
+
+/* PDF / 프로토타입이 실제로 렌더되는 프레임 */
+.doc-viewer__frame {
+  width: 100%;
+  height: var(--doc-viewer-height);
+  background-color: var(--surface-body);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--bevel);
+  overflow: hidden;
+}
+
+.doc-viewer__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 /* ============================================================
@@ -2095,6 +2242,23 @@ img {
     font-size: 28px;
   }
 
+  /* 기획서 뷰어 — 프레임 높이 축소, 탭 행 가로 스크롤 */
+  .doc-viewer__frame {
+    height: 70vh;
+  }
+
+  .doc-viewer__groups,
+  .doc-viewer__tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .doc-viewer__group,
+  .doc-viewer__tab {
+    flex: 0 0 auto;
+  }
+
   /* 문서 타일 그리드 — 2-up */
   .planning-gallery__grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2190,6 +2354,7 @@ img {
       <button class="project-switcher__chip" data-page-link="donutcrash">DonutCrash</button>
       <button class="project-switcher__chip" data-page-link="ptd">PathTowerDefence</button>
       <button class="project-switcher__chip" data-page-link="mouse">생쥐 대탈출</button>
+      <button class="project-switcher__chip" data-page-link="attendance">프로젝트_출근</button>
     </nav>
   </div>
 </header>
@@ -2206,7 +2371,7 @@ img {
         <h1 class="intro-hero__name">서윤준</h1>
         <p class="intro-hero__pitch">
           <span class="kw intro-hero__pitch-quote">"전투, 스킬, UI, 재화 경제까지 모든 분야를 개발한 기획자"</span>
-          세 개의 프로젝트에서 전 영역을 도맡으며, 규칙과 수식으로 시스템을 정립,
+          네 개의 프로젝트에서 전 영역을 도맡으며, 규칙과 수식으로 시스템을 정립,
 		  다양한 형태로 구현하여 검증한 게임 기획자, 서윤준 입니다.
         </p>
         <div class="intro-hero__contact">
@@ -2258,6 +2423,16 @@ img {
             <div class="project-link-card__meta">방치형 · 컨셉/UI/재화 경제 기획</div>
           </div>
         </button>
+        <!-- 프로젝트_출근 — 실무 프로젝트. 인게임 컷 대신 설계 다이어그램을 카드 썸네일로 사용 -->
+        <button class="project-link-card" data-page-link="attendance">
+          <div class="project-link-card__media">
+            <img data-img-src="attendance/출근_구조_01_3테이블_역할분리.png" alt="">
+          </div>
+          <div class="project-link-card__caption">
+            <div class="project-link-card__title">프로젝트_출근</div>
+            <div class="project-link-card__meta">인크리멘탈 · 시나리오 데이터 구조/이벤트 조건 기획</div>
+          </div>
+        </button>
       </div>
     </div>
   </section>
@@ -2283,6 +2458,11 @@ img {
         <div class="skill-card">
           <div class="skill-card__title">데이터 무결성 관리</div>
           <div class="skill-card__desc">4년 회계 실무로 익힌 오차를 허용하지 않는 습관을 기획서 및 데이터 관리에 적용</div>
+        </div>
+        <!-- 프로젝트_출근을 근거로 신설한 항목 -->
+        <div class="skill-card">
+          <div class="skill-card__title">대규모 데이터 운영</div>
+          <div class="skill-card__desc">1만 8천 행 규모의 시나리오 데이터를 스크립트와 자동 검사 도구로 무결하게 유지</div>
         </div>
       </div>
     </div>
@@ -2365,6 +2545,17 @@ img {
             </div>
             <div class="skill-rating-item__note">회계 4년 실무 · PTD 웨이브 시뮬레이션 시트 직접 제작</div>
           </div>
+          <!-- ★★★☆☆ 활용 — Python (openpyxl 기반 데이터 스크립트) -->
+          <div class="skill-rating-item">
+            <div class="skill-rating-item__name">Python</div>
+            <div class="skill-rating-item__bottom">
+              <span class="skill-rating-item__stars skill-rating-item__stars--applied">
+                <svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg><svg class="skill-rating-item__star skill-rating-item__star--empty" viewBox="0 0 12 12" fill="currentColor"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+              </span>
+              <span class="skill-rating-item__rating skill-rating-item__rating--applied">활용</span>
+            </div>
+            <div class="skill-rating-item__note">openpyxl 기반 데이터 마이그레이션 · 정합성 검사 스크립트 작성</div>
+          </div>
           <!-- ★★★★☆ 숙련 — Notion -->
           <div class="skill-rating-item">
             <div class="skill-rating-item__name">Notion</div>
@@ -2437,7 +2628,7 @@ img {
               </span>
               <span class="skill-rating-item__rating skill-rating-item__rating--applied">활용</span>
             </div>
-            <div class="skill-rating-item__note">디자인 시스템 적용 · 단계별 의사결정 보조</div>
+            <div class="skill-rating-item__note">디자인 시스템 적용 · 대규모 데이터 마이그레이션 스크립트 작성 보조</div>
           </div>
           <!-- ★★☆☆☆ 사용 — Jira -->
           <div class="skill-rating-item">
@@ -2575,10 +2766,22 @@ img {
       <div class="purchase-box">
         <div class="purchase-box__heading">Donut Crash — 플레이 스토어</div>
         <div class="purchase-box__actions">
-          <button class="cta-button-secondary" data-open-links data-links-key="donutcrash">-자료 모아 보기-</button>
           <a class="cta-button-primary" href="https://play.google.com/store/apps/details?id=com.KRKIDS.DonutCrash&hl=ko" target="_blank" rel="noopener">스토어 바로가기</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ DOC VIEWER — DonutCrash ============ -->
+  <!-- 기획서 인라인 뷰어 — EXTERNAL_LINKS['donutcrash'] 데이터로 자동 렌더링 -->
+  <section class="doc-viewer" data-doc-viewer="donutcrash">
+    <div class="doc-viewer__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <p class="doc-viewer__hint">문서를 페이지에 직접 임베드했습니다. 탭을 눌러 바로 확인하실 수 있습니다.</p>
+      <!-- 내부 마크업은 initDocViewers()가 생성 -->
+      <div class="doc-viewer__body"></div>
     </div>
   </section>
 
@@ -2841,10 +3044,22 @@ img {
       <div class="purchase-box">
         <div class="purchase-box__heading">PathTowerDefence — 플레이 가능한 빌드</div>
         <div class="purchase-box__actions">
-          <button class="cta-button-secondary" data-open-links data-links-key="ptd">-자료 모아 보기-</button>
           <a class="cta-button-primary" href="https://drive.google.com/drive/folders/1mQsUagU8rfkE4f0a8rDdEJbCynAmxJ9_?usp=sharing" target="_blank" rel="noopener">게임 다운로드</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ DOC VIEWER — PTD ============ -->
+  <!-- 기획서 인라인 뷰어 — EXTERNAL_LINKS['ptd'] 데이터로 자동 렌더링 -->
+  <section class="doc-viewer" data-doc-viewer="ptd">
+    <div class="doc-viewer__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <p class="doc-viewer__hint">문서를 페이지에 직접 임베드했습니다. 탭을 눌러 바로 확인하실 수 있습니다.</p>
+      <!-- 내부 마크업은 initDocViewers()가 생성 -->
+      <div class="doc-viewer__body"></div>
     </div>
   </section>
 
@@ -3048,7 +3263,7 @@ img {
           </div>
           <p class="info-sidebar__blurb">
             터치 및 대기 상태로 재화를 모으는 <span class="kw">방치형 클리커 게임</span>.
-            성장 곡선과 재화 인플레이션 관리에 초점을 둔 경제 구조를 설계중 입니다.
+            성장 곡선과 재화 인플레이션 관리에 초점을 둔 경제 구조를 설계했습니다.
           </p>
           <div class="info-sidebar__meta">
             <span class="info-sidebar__meta-label">장르:</span>
@@ -3058,7 +3273,7 @@ img {
             <span class="info-sidebar__meta-label">담당:</span>
             <span class="info-sidebar__meta-value">시스템 · 재화 밸런스 설계</span>
             <span class="info-sidebar__meta-label">개발 기간:</span>
-            <span class="info-sidebar__meta-value">2026.04 ~ 진행중</span>
+            <span class="info-sidebar__meta-value">2026.04 ~ 2026.06 (잠정 중단)</span>
             <span class="info-sidebar__meta-label">툴:</span>
             <span class="info-sidebar__meta-value">Excel, Figma, Notion</span>
             <span class="info-sidebar__meta-label">엔진:</span>
@@ -3075,16 +3290,34 @@ img {
               <span class="tag-pill">모바일</span>
             </div>
           </div>
+          <!-- 상태 노트 — 중단 사유 -->
+          <div class="info-sidebar__note">
+            <span class="info-sidebar__note-label">잠정 중단</span>
+            함께 개발하던 클라이언트 개발자의 <span class="kw">취업으로 구현이 중단</span>되어,
+            2026년 6월 시점의 기획 문서까지를 산출물로 정리했습니다.
+          </div>
         </aside>
       </div>
 
       <div class="purchase-box">
         <div class="purchase-box__heading">생쥐 대탈출 — 프로토타입</div>
         <div class="purchase-box__actions">
-          <button class="cta-button-secondary" data-open-links data-links-key="mouse">-자료 모아 보기-</button>
           <a class="cta-button-primary" href="https://www.figma.com/proto/bt9KgBCiWvIaU2Dclmkvrj/%EC%A0%9C%EB%AA%A9-%EC%97%86%EC%9D%8C?node-id=588-10143&t=MXoXAUjnkVB06N23-1" target="_blank" rel="noopener">Figma 바로가기</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ DOC VIEWER — 생쥐 대탈출 ============ -->
+  <!-- 기획서 인라인 뷰어 — EXTERNAL_LINKS['mouse'] 데이터로 자동 렌더링 -->
+  <section class="doc-viewer" data-doc-viewer="mouse">
+    <div class="doc-viewer__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <p class="doc-viewer__hint">문서를 페이지에 직접 임베드했습니다. 탭을 눌러 바로 확인하실 수 있습니다.</p>
+      <!-- 내부 마크업은 initDocViewers()가 생성 -->
+      <div class="doc-viewer__body"></div>
     </div>
   </section>
 
@@ -3172,16 +3405,16 @@ img {
             <img data-img-src="생쥐대탈출_결과물.png" alt="기획 산출물 — UI·플레이 기획서">
           </div>
           <div class="about-item__text">
-            <div class="devnote-step">STEP 04 · 현재 진행 상황</div>
-            <h3 class="about-item__heading">현 단계 산출물과 다음 계획</h3>
+            <div class="devnote-step">STEP 04 · 중단 시점 산출물</div>
+            <h3 class="about-item__heading">중단 시점까지의 산출물</h3>
             <ul class="devnote-results">
               <li><strong>UI 기획서</strong>로딩·메인·6개 팝업의 화면 흐름과 좌표·크기 단위까지 정의한 설계 문서</li>
               <li><strong>기본 플레이 기획서</strong>터치/방치 수익 루프를 프로세스 차트와 처리 규칙(쿨타임·예외 처리 등)으로 구조화</li>
               <li><strong>재화 경제 설계</strong>4개 성장 축의 획득·소모처와 보너스 연산 방식을 데이터로 정리</li>
             </ul>
             <div class="devnote-reflect">
-              <strong>현재 진행 중.</strong> 모바일 출시를 목표로 기획·설계를 진행하는 단계로, 현재 자료는 UI·플레이 기획 문서 기준입니다.
-              다음 단계로 빌드 구현과 성장 곡선 실측을 통한 밸런스 조정을 계획하고 있습니다.
+              <strong>잠정 중단.</strong> 개발자의 취업으로 구현이 멈추면서 2026년 6월에 작업을 중단했습니다.
+              현재 자료는 UI·플레이 기획 문서 기준이며, 빌드 구현과 성장 곡선 실측을 통한 밸런스 조정은 남은 과제로 정리해 두었습니다.
             </div>
           </div>
         </article>
@@ -3190,6 +3423,282 @@ img {
     </div>
   </section>
 
+
+</main>
+
+<!-- ============================================================ -->
+<!-- ============ 프로젝트_출근 PAGE ============ -->
+<!-- ============================================================ -->
+<main class="page" data-page="attendance">
+
+  <section class="hero-band">
+    <!-- 배경 이미지 — 강한 블러 + 낮은 투명도로 분위기만 전달 -->
+    <div class="hero-band__bg" data-bg-img=""></div>
+    <div class="hero-band__mask"></div>
+    <div class="hero-band__inner">
+      <h1 class="hero-band__title">프로젝트_출근</h1>
+
+      <div class="hero-band__pair">
+        <div class="media-slider" data-slider>
+          <div class="media-slider__frame">
+            <!-- 인게임 스크린샷 대신 설계 다이어그램을 슬라이드로 사용 -->
+            <div class="media-slider__slide media-slider__slide--active" data-slide="0">
+              <img data-img-src="attendance/출근_구조_01_3테이블_역할분리.png" alt="3 테이블 역할 분리">
+              <div class="media-slider__caption">3 테이블 역할 분리 — 조건 · 시퀀스 · 대사</div>
+            </div>
+            <div class="media-slider__slide" data-slide="1">
+              <img data-img-src="attendance/출근_구조_03_이어받기_패턴.png" alt="조건 테이블 이어받기 패턴">
+              <div class="media-slider__caption">복제 없이 분기를 만드는 이어받기 패턴</div>
+            </div>
+            <div class="media-slider__slide" data-slide="2">
+              <img data-img-src="attendance/출근_구조_04_랜덤대사_적재구조.png" alt="랜덤 대사 적재 구조">
+              <div class="media-slider__caption">랜덤 대사 적재 구조</div>
+            </div>
+            <div class="media-slider__slide" data-slide="3">
+              <img data-img-src="attendance/출근_구조_02_하루루프_판정시점.png" alt="하루 루프 판정 시점">
+              <div class="media-slider__caption">하루 루프 판정 시점</div>
+            </div>
+            <div class="media-slider__slide" data-slide="4">
+              <img data-img-src="attendance/출근_구조_05_정합성_자동검사.png" alt="정합성 자동 검사 6분류">
+              <div class="media-slider__caption">정합성 자동 검사 6분류</div>
+            </div>
+          </div>
+          <div class="media-slider__thumbs">
+            <button class="media-slider__thumb media-slider__thumb--active" data-thumb="0" aria-label="슬라이드 1">
+              <img data-img-src="attendance/출근_구조_01_3테이블_역할분리.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="1" aria-label="슬라이드 2">
+              <img data-img-src="attendance/출근_구조_03_이어받기_패턴.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="2" aria-label="슬라이드 3">
+              <img data-img-src="attendance/출근_구조_04_랜덤대사_적재구조.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="3" aria-label="슬라이드 4">
+              <img data-img-src="attendance/출근_구조_02_하루루프_판정시점.png" alt="">
+            </button>
+            <button class="media-slider__thumb" data-thumb="4" aria-label="슬라이드 5">
+              <img data-img-src="attendance/출근_구조_05_정합성_자동검사.png" alt="">
+            </button>
+          </div>
+        </div>
+
+        <aside class="info-sidebar">
+          <!-- 타이틀 아트 미제작 — 텍스트 키비주얼 제작 후 교체 필요 -->
+          <div class="info-sidebar__title-art">
+            <img data-img-src="attendance/출근_타이틀아트.png" alt="프로젝트_출근 타이틀 아트">
+          </div>
+          <p class="info-sidebar__blurb">
+            6주 오피스 생활을 다룬 <span class="kw">인크리멘탈 스토리 게임</span>.
+            시퀀스·조건·대사 3종 데이터 테이블 위에서 평판 구간과 진척 지표에 따라
+            대사와 종결 분기가 갈라지도록 설계했습니다.
+          </p>
+          <div class="info-sidebar__meta">
+            <span class="info-sidebar__meta-label">장르:</span>
+            <span class="info-sidebar__meta-value">인크리멘탈 / 멀티엔딩 스토리</span>
+            <span class="info-sidebar__meta-label">개발 인원:</span>
+            <span class="info-sidebar__meta-value">기획 3 / 개발 1</span>
+            <span class="info-sidebar__meta-label">담당:</span>
+            <span class="info-sidebar__meta-value">시나리오 데이터 구조 · 이벤트 조건 설계</span>
+            <!-- 개발 기간 확인 후 수정 필요 -->
+            <span class="info-sidebar__meta-label">개발 기간:</span>
+            <span class="info-sidebar__meta-value">2026.08 ~ 2026.09 (계약 종료)</span>
+            <span class="info-sidebar__meta-label">툴:</span>
+            <span class="info-sidebar__meta-value">Excel, Python(openpyxl), Notion</span>
+            <span class="info-sidebar__meta-label">엔진:</span>
+            <span class="info-sidebar__meta-value">Unity (3D 쿼터뷰)</span>
+          </div>
+          <div>
+            <div class="info-sidebar__tags-label">이 프로젝트의 인기 태그:</div>
+            <div class="info-sidebar__tags">
+              <span class="tag-pill">데이터 구조 설계</span>
+              <span class="tag-pill">조건 테이블</span>
+              <span class="tag-pill">스크립트 자동화</span>
+              <span class="tag-pill">데이터 검증</span>
+              <span class="tag-pill">평판 시스템</span>
+              <span class="tag-pill">멀티엔딩</span>
+            </div>
+          </div>
+          <!-- 상태 노트 — 참여 종료 사유 -->
+          <div class="info-sidebar__note">
+            <span class="info-sidebar__note-label">계약 종료</span>
+            <span class="kw">참여 계약 종료</span>로 2026년 9월까지 담당 구간인
+            데이터 규격과 이벤트 조건 설계를 마무리하고 인계했습니다.
+          </div>
+        </aside>
+      </div>
+
+      <!-- 플레이 빌드가 없는 프로젝트 — 공개용으로 새로 작성한 방법론 요약 PDF로 대체 -->
+      <div class="purchase-box">
+        <div class="purchase-box__heading">프로젝트_출근 — 설계 방법론 요약 (공개용)</div>
+        <div class="purchase-box__actions">
+          <a class="cta-button-primary" data-pdf-href="프로젝트_출근_설계방법론_요약.pdf" target="_blank" rel="noopener">다운로드</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DOC VIEWER — 프로젝트_출근 ============ -->
+  <!-- 기획서 인라인 뷰어 — EXTERNAL_LINKS['attendance'] 데이터로 자동 렌더링 -->
+  <section class="doc-viewer" data-doc-viewer="attendance">
+    <div class="doc-viewer__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">기획서 및 관련 문서</h2>
+      </div>
+      <p class="doc-viewer__hint">진행 중인 사업과 관련된 프로젝트라 사내 문서 대신, 설계 방법론만 새로 정리한 공개용 문서를 임베드했습니다. 문서에 등장하는 식별자·수식·예시는 모두 가상으로 작성한 것입니다.</p>
+      <!-- 내부 마크업은 initDocViewers()가 생성 -->
+      <div class="doc-viewer__body"></div>
+    </div>
+  </section>
+
+  <!-- ============ DEV NOTE — 프로젝트_출근 ============ -->
+  <!-- 강조 순서 고정: 데이터 구조 → 스크립트 자동화·검증 → 시나리오·캐릭터 → 시스템 밸런싱 -->
+  <section class="devnote">
+    <div class="devnote__inner">
+      <div class="section-header">
+        <h2 class="section-header__title">개발 노트</h2>
+      </div>
+      <div class="devnote__list">
+
+        <!-- STEP 01. 역할과 목표 (이미지 왼쪽) -->
+        <article class="about-item">
+          <div class="about-item__media about-item__media--contain">
+            <img data-img-src="attendance/출근_구조_01_3테이블_역할분리.png" alt="주간·일일 상위 흐름">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 01 · 역할과 목표</div>
+            <h3 class="about-item__heading">대사가 아니라, 대사가 나올 조건을 설계하는 일</h3>
+            <div class="devnote-roles">
+              <span class="devnote-role">데이터 구조 설계</span>
+              <span class="devnote-role">이벤트 조건 설계</span>
+              <span class="devnote-role">시나리오</span>
+            </div>
+            <p class="devnote-goal">
+              대사를 쓰는 작업이 아니라, 어떤 대사가 언제 어떤 조건으로 출력될지를 규정하는
+              <span class="kw">데이터 구조</span>를 세우는 작업이었습니다.
+              액션 20종과 UID 명명 규칙, 조건식 문법을 먼저 정의하고,
+              그 규격 위에 <span class="kw">시퀀스 2만여 행</span>을 쌓아 6주 분량의 하루 루프를 구성했습니다.
+            </p>
+          </div>
+        </article>
+
+        <!-- STEP 02. 디자인 포인트 (이미지 오른쪽) -->
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media about-item__media--contain">
+            <img data-img-src="attendance/출근_구조_04_랜덤대사_적재구조.png" alt="랜덤 대사 적재 구조">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 02 · 디자인 포인트</div>
+            <h3 class="about-item__heading">이 게임의 핵심 재미</h3>
+            <ul class="devnote-points">
+              <li><strong>NPC마다 다른 호감 표현</strong><span class="devnote-point__desc">누구는 호칭이 바뀌고, 누구는 답변 길이가 늘고, 누구는 사적인 부탁이 늘어난다. 수치를 숫자로 보여주지 않고 대사의 형태 변화로만 전달하도록 설계</span></li>
+              <li><strong>관측과 비용이 있어야 움직이는 평판</strong><span class="devnote-point__desc">대답 한 줄로는 호감이 오르지 않는다. 상대가 그 선택을 눈앞에서 봤는가, 그 선택이 무언가를 걸었는가 — 두 조건을 모두 만족할 때만 수치가 변한다</span></li>
+              <li><strong>6주가 그대로 결과로 수렴하는 구조</strong><span class="devnote-point__desc">파트별 평판과 진척 지표를 조합해 종결 분기를 결정. 마지막에 몰아서 정하지 않고 매일의 선택이 누적되도록 설계</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- STEP 03-A. 문제 해결 — 분기 구조 (이미지 왼쪽) -->
+        <article class="about-item">
+          <div class="about-item__media about-item__media--contain">
+            <img data-img-src="attendance/출근_구조_03_이어받기_패턴.png" alt="조건 테이블 이어받기 패턴">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 03 · 문제 해결 A</div>
+            <h3 class="about-item__heading">분기를 만들 수 없는 엔진 위에서 분기를 만들기</h3>
+            <div class="devnote-trouble">
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--problem">문제</span>
+                <p class="devnote-trouble__text">
+                  엔진 구조상 시퀀스는 흐름 제어를 할 수 없고, 조건 분기는 조건 테이블만 담당했습니다.
+                  전날의 선택에 따라 다음 날 대화를 갈라지게 하려면 본편 전체를 경로 수만큼 복제하는 방법밖에 없어,
+                  유지보수가 불가능한 규모로 불어날 상황이었습니다.
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--solution">해결</span>
+                <p class="devnote-trouble__text">
+                  한 시점에 조건행 여러 개가 연속 실행된다는 점을 이용해,
+                  본편 시퀀스가 분기 지점에서 끝나면 조건 테이블이 그 자리를 이어받아
+                  경로별 보조 대화를 재생하고 다시 본편 마무리로 합류하는 구조를 설계했습니다.
+                  과거 선택 이력은 시퀀스 실행 여부를 묻는 조건식으로 판정했습니다.
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--result">결과</span>
+                <p class="devnote-trouble__text">
+                  본편을 복제하지 않고 3개 경로 분기를 확보했습니다.
+                  이 패턴은 이후 과거 선택을 참조해야 하는 모든 구간의 표준 방식으로 정착했고,
+                  동일 구조를 쓰는 다른 이벤트에도 그대로 재사용하고 있습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 03-B. 문제 해결 — 데이터 마이그레이션 (이미지 오른쪽) -->
+        <!-- 이미지 미확보: 검증 스크립트 실행 결과 콘솔 캡처 필요 -->
+        <article class="about-item about-item--reverse">
+          <div class="about-item__media about-item__media--contain">
+            <img data-img-src="attendance/출근_구조_05_정합성_자동검사.png" alt="정합성 자동 검사 6분류">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 03 · 문제 해결 B</div>
+            <h3 class="about-item__heading">1,404개 셀을 손대지 않고 바꾸기</h3>
+            <div class="devnote-trouble">
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--problem">문제</span>
+                <p class="devnote-trouble__text">
+                  평판 판정 체계를 4구간에서 5구간으로 개편하면서, 데이터 전반에 박혀 있던
+                  경계값 조건식이 한꺼번에 무효가 됐습니다. 대상은 1,400여 개 셀.
+                  스프레드시트에서 직접 고치면 누락과 오타로 정합성이 깨질 것이 확실했습니다.
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--solution">해결</span>
+                <p class="devnote-trouble__text">
+                  수작업을 금지하고 마이그레이션 스크립트로 일괄 치환했습니다.
+                  동시에 임포트 전에 반드시 실행하는 검사 도구 4종을 만들어,
+                  식별자 중복·미정의 참조·고아 행·화자 표기 불일치·연출 짝 맞춤 등
+                  6개 분류의 정합 항목을 자동 점검하도록 했습니다.
+                </p>
+              </div>
+              <div class="devnote-trouble__row">
+                <span class="devnote-trouble__label devnote-trouble__label--result">결과</span>
+                <p class="devnote-trouble__text">
+                  수만 행 규모의 데이터를 개편하고도 검사 항목 전부 0건으로 통과했습니다.
+                  이후 모든 데이터 수정은 "스크립트로 바꾸고 검사 도구로 확인한다"를 원칙으로 굳혔고,
+                  개편 때마다 반복되던 수동 검수 공수를 없앴습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 04. 결과 정리 (이미지 왼쪽) -->
+        <article class="about-item">
+          <div class="about-item__media about-item__media--contain">
+            <img data-img-src="attendance/출근_구조_02_하루루프_판정시점.png" alt="하루 루프 판정 시점">
+          </div>
+          <div class="about-item__text">
+            <div class="devnote-step">STEP 04 · 결과 정리</div>
+            <h3 class="about-item__heading">작업 산출물</h3>
+            <ul class="devnote-results">
+              <li><strong>데이터 규격서</strong>액션별 파라미터 슬롯 대응표·식별자 명명 규칙·조건식 문법·수치 증감 규정을 단일 정본으로 정립</li>
+              <li><strong>3종 데이터 테이블</strong>시퀀스 2만여 행 / 조건 2천여 행 / 대사 1만여 행을 정합성 검증 통과 상태로 유지</li>
+              <li><strong>정합성 검사 도구</strong>식별자·참조·조건식·짝 맞춤·표기·실행 재현 6개 분류의 자동 검사</li>
+              <li><strong>이벤트 분기 설계</strong>평판 구간과 진척 지표를 조합한 종결 분기의 진입 조건 설계</li>
+            </ul>
+            <div class="devnote-reflect">
+              <strong>배운 점.</strong> 수치를 넣은 뒤에는 반드시 모든 종단 경로를 따라가며 누적값을 검산해야 한다는 것을 배웠습니다.
+              설계상 맞아 보이는 값도 실제 경로를 전수로 돌려 보면 특정 분기에서만 의도와 다르게 수렴하는 경우가 있었고,
+              이후로는 검산을 거치지 않은 수치는 확정하지 않는 습관이 생겼습니다.
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
 
 </main>
 
@@ -3222,10 +3731,10 @@ img {
 // 외부 리소스 베이스 URL 미러 — CSS 변수와 동일한 값
 // ============================================================
 const MEDIA_BASE = {
-  images: 'https://koioas1.github.io/syj_portfolio/img/',
-  gif: 'https://koioas1.github.io/syj_portfolio/gif/',
-  video: 'https://koioas1.github.io/syj_portfolio/video/',
-  pdf: 'https://koioas1.github.io/syj_portfolio/pdf/'
+  images: 'https://koioas1.github.io/syj_web_portfolio/img/',
+  gif: 'https://koioas1.github.io/syj_web_portfolio/gif/',
+  video: 'https://koioas1.github.io/syj_web_portfolio/video/',
+  pdf: 'https://koioas1.github.io/syj_web_portfolio/pdf/'
 };
 
 // ============================================================
@@ -3304,11 +3813,20 @@ const EXTERNAL_LINKS = {
         { label: '생쥐 대탈출 프로토타입', urlType: 'external', url: 'https://embed.figma.com/proto/bt9KgBCiWvIaU2Dclmkvrj/%EC%A0%9C%EB%AA%A9-%EC%97%86%EC%9D%8C?node-id=588-10143&viewport=-19810%2C17527%2C0.91&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=588%3A10143&show-proto-sidebar=1&page-id=0%3A1&embed-host=share' }
       ]
     }
+  ],
+  attendance: [
+    {
+      type: 'notion',
+      label: '기획서',
+      items: [
+        { label: '설계 방법론 요약 (공개용)', urlType: 'pdf', url: '프로젝트_출근_설계방법론_요약.pdf' }
+      ]
+    }
   ]
 };
 
 // 유효한 페이지 키 목록 — 라우팅 검증용
-const VALID_PAGES = ['intro', 'donutcrash', 'ptd', 'mouse'];
+const VALID_PAGES = ['intro', 'donutcrash', 'ptd', 'mouse', 'attendance'];
 
 // ============================================================
 // 외부 이미지 일괄 주입
@@ -3388,6 +3906,9 @@ function showPage(pageKey) {
 
   // 활성화된 페이지 내의 슬라이더만 재시작
   initSlidersOnActivePage();
+
+  // 활성화된 페이지의 기획서 뷰어만 문서를 로드
+  updateDocViewersOnActivePage();
 }
 
 // 페이지 링크 클릭 바인딩 — 스위처 칩, 브랜드 로고, 인트로 카드
@@ -3607,6 +4128,9 @@ function initModal() {
     document.body.classList.add('is-modal-open');
   }
 
+  // 인라인 뷰어의 '크게 보기'가 사용할 수 있도록 모달 오프너를 외부에 노출
+  docModalOpener = openPdfModal;
+
   // 외부 링크 모달 열기 — 프로젝트별 EXTERNAL_LINKS 데이터 사용
   // 버튼 클릭 시 같은 항목의 패널이 펼쳐지며 외부 페이지/PDF를 로드한다.
   // 하위 문서가 여러 개인 경우 탭 행을 통해 같은 iframe의 src만 교체한다.
@@ -3754,6 +4278,155 @@ function initModal() {
     if (e.key === 'Escape' && modal.classList.contains('is-open')) {
       closeModal();
     }
+  });
+}
+
+// ============================================================
+// 기획서 인라인 뷰어 — EXTERNAL_LINKS 데이터를 그대로 화면에 렌더링
+// 그룹 탭(기획서/발표 자료/프로토타입) + 문서 탭 + iframe 한 개.
+// 비활성 페이지의 iframe은 src를 비워 두어 불필요한 로딩을 막는다.
+// ============================================================
+let docModalOpener = null;
+const docViewerInstances = new Map();
+
+// url 타입별 실제 src 문자열 빌드 — pdf는 베이스 URL 합성, external은 그대로
+function buildDocSrc(item) {
+  if (item.urlType === 'pdf') {
+    return MEDIA_BASE.pdf + encodeURI(item.url) + '#view=FitH';
+  }
+  return item.url;
+}
+
+function initDocViewers() {
+  document.querySelectorAll('[data-doc-viewer]').forEach(function(root) {
+    const projectKey = root.getAttribute('data-doc-viewer');
+    const groups = EXTERNAL_LINKS[projectKey] || [];
+    const body = root.querySelector('.doc-viewer__body');
+    if (!body) return;
+
+    // 데이터가 없는 프로젝트는 섹션 자체를 숨김 — 빈 섹션 금지
+    if (groups.length === 0) {
+      root.style.display = 'none';
+      return;
+    }
+
+    // 골격 생성 — 툴바(그룹 탭 + 액션) / 문서 탭 / iframe 프레임
+    let html = '<div class="doc-viewer__toolbar">';
+    html +=   '<div class="doc-viewer__groups">';
+    groups.forEach(function(group, i) {
+      const activeClass = (i === 0) ? ' is-active' : '';
+      html += '<button type="button" class="doc-viewer__group' + activeClass + '" data-group-index="' + i + '">' + group.label + '</button>';
+    });
+    html +=   '</div>';
+    html +=   '<div class="doc-viewer__actions">';
+    html +=     '<button type="button" class="cta-button-secondary" data-doc-expand>크게 보기 →</button>';
+    html +=     '<a class="cta-button-secondary" data-doc-newtab href="#" target="_blank" rel="noopener">새 탭에서 열기 →</a>';
+    html +=   '</div>';
+    html += '</div>';
+    html += '<div class="doc-viewer__tabs"></div>';
+    html += '<div class="doc-viewer__frame"><iframe class="doc-viewer__iframe" title="기획서 뷰어" loading="lazy" allowfullscreen></iframe></div>';
+    body.innerHTML = html;
+
+    const tabsEl = body.querySelector('.doc-viewer__tabs');
+    const iframe = body.querySelector('.doc-viewer__iframe');
+    const expandBtn = body.querySelector('[data-doc-expand]');
+    const newTabLink = body.querySelector('[data-doc-newtab]');
+    // 그룹이 하나뿐이면 그룹 탭 행을 감춘다
+    if (groups.length === 1) {
+      body.querySelector('.doc-viewer__groups').style.display = 'none';
+    }
+
+    const state = { groupIndex: 0, itemIndex: 0, isActive: false };
+
+    // 현재 선택된 문서 반환
+    function currentItem() {
+      const group = groups[state.groupIndex];
+      if (!group || !group.items) return null;
+      return group.items[state.itemIndex] || null;
+    }
+
+    // 문서 탭 행 다시 그리기 — 그룹 전환 시에만 호출
+    function renderTabs() {
+      const items = (groups[state.groupIndex] || {}).items || [];
+      let tabHtml = '';
+      items.forEach(function(item, i) {
+        const activeClass = (i === state.itemIndex) ? ' is-active' : '';
+        tabHtml += '<button type="button" class="doc-viewer__tab' + activeClass + '" data-item-index="' + i + '">' + item.label + '</button>';
+      });
+      tabsEl.innerHTML = tabHtml;
+      // 문서가 하나뿐이면 탭 행을 감춘다
+      tabsEl.style.display = (items.length > 1) ? '' : 'none';
+    }
+
+    // 현재 문서를 iframe에 로드 — 활성 페이지일 때만 실제 src를 채운다
+    function loadCurrent() {
+      const item = currentItem();
+      if (!item) return;
+      const src = buildDocSrc(item);
+      if (state.isActive) {
+        if (iframe.getAttribute('src') !== src) iframe.setAttribute('src', src);
+      } else {
+        iframe.removeAttribute('src');
+      }
+      iframe.title = item.label;
+      if (newTabLink) newTabLink.href = src;
+    }
+
+    // 그룹 탭 클릭 — 첫 문서로 초기화 후 재로딩
+    body.querySelectorAll('.doc-viewer__group').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        state.groupIndex = parseInt(btn.getAttribute('data-group-index'), 10);
+        state.itemIndex = 0;
+        body.querySelectorAll('.doc-viewer__group').forEach(function(other) {
+          other.classList.remove('is-active');
+        });
+        btn.classList.add('is-active');
+        renderTabs();
+        loadCurrent();
+      });
+    });
+
+    // 문서 탭 클릭 — iframe src만 교체 (이벤트 위임)
+    tabsEl.addEventListener('click', function(e) {
+      const tab = e.target.closest('.doc-viewer__tab');
+      if (!tab) return;
+      state.itemIndex = parseInt(tab.getAttribute('data-item-index'), 10);
+      tabsEl.querySelectorAll('.doc-viewer__tab').forEach(function(other) {
+        other.classList.remove('is-active');
+      });
+      tab.classList.add('is-active');
+      loadCurrent();
+    });
+
+    // 크게 보기 — PDF는 모달로, 외부 링크는 새 탭으로
+    if (expandBtn) {
+      expandBtn.addEventListener('click', function() {
+        const item = currentItem();
+        if (!item) return;
+        if (item.urlType === 'pdf' && docModalOpener) {
+          docModalOpener(item.url, item.label);
+        } else {
+          window.open(buildDocSrc(item), '_blank', 'noopener');
+        }
+      });
+    }
+
+    // 페이지 활성/비활성 전환 시 호출 — 활성일 때만 문서를 로드
+    function setActive(isActive) {
+      state.isActive = isActive;
+      loadCurrent();
+    }
+
+    renderTabs();
+    docViewerInstances.set(root, setActive);
+  });
+}
+
+// 활성 페이지의 뷰어만 문서를 로드하고, 나머지는 src를 비운다
+function updateDocViewersOnActivePage() {
+  docViewerInstances.forEach(function(setActive, root) {
+    const parentPage = root.closest('.page');
+    setActive(!!(parentPage && parentPage.classList.contains('is-active')));
   });
 }
 
@@ -3928,6 +4601,7 @@ document.addEventListener('DOMContentLoaded', function() {
   bindPageLinks();
   bindHashRouter();
   initModal();
+  initDocViewers();
   initIntro();
 
   // 초기 페이지 결정 — URL 해시가 있으면 해당 페이지, 없으면 intro
